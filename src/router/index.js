@@ -1,6 +1,5 @@
 import { createRouter, createWebHistory } from 'vue-router'
 import HomeView from '../views/HomeView.vue'
-import AdView from '@/views/AdView.vue'
 
 const router = createRouter({
   history: createWebHistory(import.meta.env.BASE_URL),
@@ -12,9 +11,9 @@ const router = createRouter({
     },
     {
       path: '/offers/:id',
-      name: 'ad',
-      component: AdView,
+      name: 'offer',
       props: true,
+      component: () => import('../views/OfferView.vue'), // fonction avec return implicite, pas besoin des accolades
     },
   ],
 })

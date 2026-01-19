@@ -1,9 +1,36 @@
 @import './base.css';
 
+:root {
+  --orange: #ec5a13;
+  --light-grey: #f4f9fe;
+  --light-coral: #fde5d8;
+  --grey: #627c93;
+  --brown: #89380f;
+  --blue-navy: #094171;
+  --header-height: 110px;
+  --footer-height: 80px;
+}
+
 * {
   box-sizing: border-box;
 }
 
 body {
   font-family: 'Nunito Sans', sans-serif;
+}
+
+/* ces balises a sont (aussi) les balises p de RouterLink, on les cibles avec le selecteur a pour enlever le soulignement et la couleur de police appliques aux liens par defaut*/
+a {
+  text-decoration: none;
+  color: inherit;
+}
+
+.container {
+  width: 1055px;
+  margin: 0 auto;
+  height: 100%;
+}
+
+main {
+  margin-top: 115px;
 }
