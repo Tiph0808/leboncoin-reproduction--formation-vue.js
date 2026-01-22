@@ -60,9 +60,8 @@ import { RouterLink } from 'vue-router'
 header {
   height: var(--header-height);
   /* border: 1px solid greenyellow; */
-  position: fixed;
+  position: fixed; /* rappel : le repere est le premier parent en position relative, si aucun parent n'est en en position relative --> le repere sera le body (parfait dans notre cas) */
   top: 0;
-  bottom: 0;
   width: 100%; /* on applique ces valeurs sur top bottom et width car en position fixed, le header sort du DOM, il n'a plus la largeur implicite de son parent mais la largeur de son contenu et se positionne par defaut en haut a gauche de la fenetre */
   background-color: white;
   border-bottom: 1px solid var(--grey);

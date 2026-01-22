@@ -2,7 +2,7 @@
 import { onMounted, ref, computed } from 'vue'
 
 import axios from 'axios'
-// import { useCycleList } from '@vueuse/core'
+import { useCycleList } from '@vueuse/core'
 
 const props = defineProps({
   id: {
@@ -29,7 +29,7 @@ onMounted(async () => {
 
     offerInfos.value = data.data
     pictures.value = data.data.attributes.pictures.data
-    console.log(offerInfos.value)
+    // console.log(offerInfos.value)
     console.log(pictures.value)
   } catch (error) {
     console.log('cactch OfferView >>> ', error.message)
@@ -45,7 +45,19 @@ const FormatedDate = computed(() => {
   return offerInfos.value.attributes.publishedAt.split('T')[0].split('-').reverse().join('/')
 })
 
-// console.log(price)
+// Correction Formation : (que je n'ai pas vraiment comprise)
+const cycleList = computed(() => {
+  //si on a notre tableau d'images on utilise useCycleList sinon on renvoie un objet vide (pourquoi un obj vide?? )
+  if (pictures.value) {
+    //on utilise la methode useCycle List (que l'on a du importer) combinée avec computed, car le tableau dimages est une valeur qui change selon l'article
+    // (RMQ : les explications de la correction qui suivent ne me permettent pas de comprendre ce que l'on a fait et pourquoi...)
+    // je transmet a useCycleList mon tableau, cette methode va nous renvoyer un objet (et comment on sait ca???) , je stocke ce que retourne cette methode dans une variable dont je destructure les clés state prev et next (????)
+    const { state, next, prev } = useCycleList(pictures.value)
+    return { state, next, prev }
+  } else {
+    return {}
+  }
+})
 </script>
 
 <template>
@@ -53,8 +65,26 @@ const FormatedDate = computed(() => {
     <p v-if="offerInfos === null">Loading...</p>
     <div v-else class="container">
       <div class="leftColumn">
-        <img :src="offerInfos.attributes.pictures.data[0].attributes.url" alt="" />
+        <div class="carrousel">
+          <!-- <img :src="offerInfos.attributes.pictures.data[0].attributes.url" alt="" /> -->
+          <!-- <p>{{ cycleList }}</p> = s'affiche un objet avec une clé state qui elle meme est un objet, notre image se trouve à la clé attributes.url :-->
 
+          <font-awesome-icon
+            :icon="['fas', 'chevron-left']"
+            @click="cycleList.prev()"
+            v-if="pictures?.length > 1"
+          />
+          <!--"au clic je veux utiliser l'une des methodes fournies renvoyées par computed , je pars de cycleList et je  fais appel a la methode prev
+          je veux aussi que mes icones s'affichent uniquement si il y a plus d une photo dans mon tableau
+          attention : si il ny a aucune photo, que le tab n'existe pas le .length va faire crasher, donc on rajoute une securite en iserant un ? juste apres le l'endroit ou est censé se trouve le tabealu de photos : ici pictures?.length = evite le crash  ar stop la lecture du code si la la valeur recherchée n'existe pas-->
+          <img :src="cycleList.state.value.attributes.url" alt="" />
+          <!-- la valeur "active" de notre img est dans state -->
+          <font-awesome-icon
+            :icon="['fas', 'chevron-right']"
+            @click="cycleList.next()"
+            v-if="pictures?.length > 1"
+          />
+        </div>
         <p class="title">{{ offerInfos.attributes.title }}</p>
         <p class="price">{{ price }} €</p>
         <!-- <p>{{ offerInfos.attributes.publishedAt }}</p> -->
@@ -108,6 +138,14 @@ main {
 .leftColumn {
   /* border: 1px solid salmon; */
   width: 65%;
+}
+
+.carrousel {
+  display: flex;
+  align-items: center;
+}
+.carrousel svg {
+  font-size: 20px;
 }
 
 .leftColumn img {

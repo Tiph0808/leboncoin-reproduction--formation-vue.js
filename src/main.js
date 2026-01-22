@@ -14,6 +14,8 @@ import {
   faCircle,
   faMapMarkerAlt,
   faCheckDouble,
+  faChevronLeft,
+  faChevronRight,
 } from '@fortawesome/free-solid-svg-icons'
 import { faSquarePlus, faUser, faHeart, faClock } from '@fortawesome/free-regular-svg-icons'
 
@@ -28,6 +30,8 @@ library.add(
   faMapMarkerAlt,
   faClock,
   faCheckDouble,
+  faChevronLeft,
+  faChevronRight,
 )
 
 const app = createApp(App)
