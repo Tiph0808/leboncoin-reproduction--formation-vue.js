@@ -2,8 +2,23 @@
 <script setup>
 import BtnPublishOffer from './BtnPublishOffer.vue'
 import { RouterLink } from 'vue-router'
+import { inject } from 'vue';
+import { useRouter } from 'vue-router';
 
-// import { RouterLink } from 'vue-router'
+// j'injecte mon store pour voir acces a ses infos
+const GlobalStore = inject('GlobalStore')
+const router = useRouter()
+
+const removeInfos = () => {
+  // au clic je supprime les infos: jwt(userToken) et userName du provider :
+  GlobalStore.userToken.value = '',
+    GlobalStore.userName.value = '',
+    // Quand ces valeurs sont à zero je redirige l'utilisateur vers la page d'acceuil:
+    router.push({ name: 'home' })
+}
+
+
+
 </script>
 
 <template>
@@ -22,13 +37,30 @@ import { RouterLink } from 'vue-router'
           </div>
         </div>
 
+
         <div class="connectionPart">
-          <div>
+          <RouterLink :to="{ name: 'login' }" v-if="!GlobalStore.userToken.value">
+            <!-- si le jwt n'existe pas alors jaffiche cette div -->
             <font-awesome-icon :icon="['far', 'user']" />
             <p>Se connecter</p>
+
+          </RouterLink>
+
+          <div v-else>
+            <!-- si il existe j'affiche le nom du user et un icon pour se deconnecter : au clic : "le token et le username sont supprimés du fournisseur de dépendance et l'utilisateur est redirigé vers la page d'accueil." -->
+
+            <p>{{ GlobalStore.userName }}</p>
+
+            <font-awesome-icon :icon="['fas', 'sign-out-alt']" @click="removeInfos" />
+
+
+
           </div>
-          <!-- <font-awesome-icon :icon="['fas', 'sign-out-alt']" /> -->
+
+
         </div>
+
+
       </div>
 
       <div class="bottomPart">
@@ -60,9 +92,11 @@ import { RouterLink } from 'vue-router'
 header {
   height: var(--header-height);
   /* border: 1px solid greenyellow; */
-  position: fixed; /* rappel : le repere est le premier parent en position relative, si aucun parent n'est en en position relative --> le repere sera le body (parfait dans notre cas) */
+  position: fixed;
+  /* rappel : le repere est le premier parent en position relative, si aucun parent n'est en en position relative --> le repere sera le body (parfait dans notre cas) */
   top: 0;
-  width: 100%; /* on applique ces valeurs sur top bottom et width car en position fixed, le header sort du DOM, il n'a plus la largeur implicite de son parent mais la largeur de son contenu et se positionne par defaut en haut a gauche de la fenetre */
+  width: 100%;
+  /* on applique ces valeurs sur top bottom et width car en position fixed, le header sort du DOM, il n'a plus la largeur implicite de son parent mais la largeur de son contenu et se positionne par defaut en haut a gauche de la fenetre */
   background-color: white;
   border-bottom: 1px solid var(--grey);
 }
@@ -107,7 +141,8 @@ img {
   background-color: var(--orange);
   padding: 7px;
   border-radius: 5px;
-  box-sizing: content-box; /* On ajoute box-sizing:content-box car au niveau de l'icone car il faut ecraser la pp box sizing:border-box sinon l'icone est trop petit*/
+  box-sizing: content-box;
+  /* On ajoute box-sizing:content-box car au niveau de l'icone car il faut ecraser la pp box sizing:border-box sinon l'icone est trop petit*/
 }
 
 input {
@@ -120,7 +155,8 @@ input:focus {
   outline: none;
 }
 
-.connectionPart > div {
+/*--- Connection part ---*/
+.connectionPart > a {
   /* border: 1px solid blue; */
   display: flex;
   flex-direction: column;

@@ -67,7 +67,7 @@ const cycleList = computed(() => {
       <div class="leftColumn">
         <div class="carrousel">
           <!-- <img :src="offerInfos.attributes.pictures.data[0].attributes.url" alt="" /> -->
-          <!-- <p>{{ cycleList }}</p> = s'affiche un objet avec une clé state qui elle meme est un objet, notre image se trouve à la clé attributes.url :-->
+          <!-- <p>{{ cycleList }}</p> = s'affiche un objet avec une clé state qui elle meme est un objet, notre image se trouve à la clé attributes.url : -->
 
           <font-awesome-icon
             :icon="['fas', 'chevron-left']"
