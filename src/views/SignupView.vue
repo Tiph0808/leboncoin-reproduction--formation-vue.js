@@ -12,6 +12,11 @@ const password = ref('')
 const errorMessage = ref('')
 const isSubmitting = ref(false)
 
+// Je cree ma ref pour l'affichage conditionnel du password
+const displayPassword = ref(false)
+
+
+
 // jinjecte mon provider et ces infos
 const GlobalStore = inject('GlobalStore')
 console.log('GlobalStore >>>', GlobalStore)
@@ -69,18 +74,32 @@ const handleSubmit = async () => {
           <h2>Inscrivez-vous pour découvrir toutes nos fonctionnalités</h2>
         </div>
 
-        <label for="username"><span>Nom <sup>*</sup></span><input type="text" v-model="username" id="username"
-            @input="errorMessage = ''"></label>
+        <label for="username"><span>Nom <sup>*</sup></span>
+          <input type="text" name="username" v-model="username" id="username" @input="errorMessage = ''">
+        </label>
         <!-- la balise sup sert a afficher l'étoile en tant qu'exposant -->
-        <label for="email"><span>Email <sup>*</sup></span><input type="email" v-model="email" id="email"
-            @input="errorMessage = ''"></label>
-        <label for="password"><span>Password <sup>*</sup></span><input type="password" v-model="password" id="password"
-            @input="errorMessage = ''"></label>
+        <label for="email"><span>Email <sup>*</sup></span>
+          <input type="email" name="email" v-model="email" id="email" @input="errorMessage = ''">
+        </label>
+        <label for="password"><span>Password <sup>*</sup></span>
+          <div class="inputPassword">
+            <input :type="displayPassword ? 'text' : 'password'" name="password" id="password" v-model="password"
+              @input="errorMessage = ''">
+            <div>
+              <font-awesome-icon :icon="['far', 'eye-slash']" v-if="!displayPassword"
+                @click="displayPassword = !displayPassword" />
+              <font-awesome-icon :icon="['far', 'eye']" v-else @click="displayPassword = !displayPassword" />
+              <!-- =  Au click je donne la valeur opposée a displayPassword -->
+            </div>
+
+
+          </div>
+        </label>
 
         <p v-if="isSubmitting">Inscription en cours...</p>
         <button v-else>S'inscrire <font-awesome-icon :icon="['fas', 'arrow-right']" /></button>
 
-        <p v-if="errorMessage">{{ errorMessage }}</p>
+        <p v-if="errorMessage" class="textError">{{ errorMessage }}</p>
 
         <p>
           Vous avez déja un compte ?
@@ -141,6 +160,26 @@ input {
   padding-left: 10px;
 }
 
+.inputPassword {
+  border: 1px solid black;
+  display: flex;
+  border-radius: 10px
+}
+
+.inputPassword div {
+  border-left: 1px solid black;
+  display: flex;
+  /* justify-content: center; */
+  align-items: center;
+  width: 40px;
+}
+
+.inputPassword > input {
+  border: none;
+  flex: 1;
+}
+
+
 input:focus {
   outline: none;
 }
@@ -166,6 +205,11 @@ p:last-child {
 a {
   font-weight: bold;
   text-decoration: underline;
+}
 
+
+.textError {
+  text-align: center;
+  color: var(--orange);
 }
 </style>

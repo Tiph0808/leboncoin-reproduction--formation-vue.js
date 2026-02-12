@@ -4,23 +4,26 @@ import { ref, inject } from 'vue';
 import axios from 'axios';
 import { useRouter } from 'vue-router'; // jimporte use router pour pouvoir envoyer mon utilisateur vers la page home si la requete a reussi
 
-const email = ref('joel@aol.com')
-const password = ref('password')
-
 // je declenche la methode userRouter et stocke ce qu'elle renvoie dans la variable router
 const router = useRouter()
-
-// je cree mes ref pour l'affichage conditionnel:
-const errorMessage = ref('')
-const isSubmitting = ref(false)
 
 // jinjecte mon provider
 const GlobalStore = inject('GlobalStore')
 
 
+// VALEURS REACTIVES
 
+const email = ref('joel@aol.com')
+const password = ref('password')
 
+// je cree mes ref pour l'affichage conditionnel:
+const errorMessage = ref('')
+const isSubmitting = ref(false)
 
+// BONUS (correction) : je cree ma ref pour le password a afficher ou pas
+const displayPassword = ref(false)
+
+// je lance ma requete a la soumission du form
 const handleSubmit = async () => {
   //Je rverifie que les infos du form sont transmises
   console.log({
@@ -52,16 +55,25 @@ const handleSubmit = async () => {
   }
 }
 
-const inputType = ref('password')
+
+// BONUS (Myway)
+
+// j'ajoute une valeur reactive : le type de mon password
+// const inputType = ref('password')
+
+// si c'est un password, au clic je le change en text, sinon je le laiise en password
+// const handlePassword = () => {
+//   if (inputType.value === 'password') {
+//     inputType.value = 'text'
+//   } else {
+//     inputType.value = 'password'
+//   }
+// }
 
 
-const handlePassword = () => {
-  if (inputType.value === 'password') {
-    inputType.value = 'text'
-  } else {
-    inputType.value = 'password'
-  }
-}
+
+
+
 
 
 </script>
@@ -78,10 +90,23 @@ const handlePassword = () => {
             @input="errorMessage = ''">
         </label>
         <label for="password"><span>Mot de passe <sup>*</sup></span>
-          <div>
+          <div class="inputPassword">
+            <!-- <Bonus password (my way):>
             <input :type="inputType" v-model="password" id="password" @input="errorMessage = ''">
             <font-awesome-icon :icon="['far', 'eye-slash']" v-if="inputType === 'password'" @click="handlePassword" />
-            <font-awesome-icon :icon="['far', 'eye']" v-if="inputType === 'text'" @click="handlePassword" />
+            <font-awesome-icon :icon="['far', 'eye']" v-if="inputType === 'text'" @click="handlePassword" /> -->
+
+            <!-- <Bonus password : correction : -->
+            <input :type="displayPassword ? 'text' : 'password'" v-model="password" id="password"
+              @input="errorMessage = ''">
+            <!-- si displayPassword est truthy alors je veux que mon iput soit de type text -->
+
+            <div>
+              <font-awesome-icon :icon="['far', 'eye-slash']" v-if="!displayPassword"
+                @click="displayPassword = !displayPassword" />
+              <font-awesome-icon :icon="['far', 'eye']" v-else @click="displayPassword = !displayPassword" />
+              <!-- =  Au click je donne la valeur opposée a displayPassword -->
+            </div>
 
           </div>
         </label>
@@ -90,7 +115,7 @@ const handlePassword = () => {
         <p v-if="isSubmitting">Connexion en cours...</p>
         <button v-else>Se connecter <font-awesome-icon :icon="['fas', 'arrow-right']" /> </button>
 
-        <p v-if="errorMessage">{{ errorMessage }}</p>
+        <p v-if="errorMessage" class="textError">{{ errorMessage }}</p>
 
         <p>Envie de nous rejoindre ? <RouterLink :to="{ name: 'signup' }">Créer un compte</RouterLink>
         </p>
@@ -149,11 +174,33 @@ input {
   height: 45px;
   border-radius: 10px;
   padding-left: 10px;
+
+}
+
+.inputPassword {
+  border: 1px solid black;
+  display: flex;
+  border-radius: 10px
+}
+
+.inputPassword div {
+  border-left: 1px solid black;
+  display: flex;
+  /* justify-content: center; */
+  align-items: center;
+  width: 40px;
+}
+
+.inputPassword > input {
+  border: none;
+  flex: 1;
 }
 
 input:focus {
   outline: none;
 }
+
+
 
 button {
   background-color: var(--orange);
@@ -177,5 +224,10 @@ a {
   font-weight: bold;
   text-decoration: underline;
 
+}
+
+.textError {
+  text-align: center;
+  color: var(--orange);
 }
 </style>
