@@ -51,28 +51,52 @@ const handleSubmit = async () => {
 
   }
 }
+
+const inputType = ref('password')
+
+
+const handlePassword = () => {
+  if (inputType.value === 'password') {
+    inputType.value = 'text'
+  } else {
+    inputType.value = 'password'
+  }
+}
+
+
 </script>
 
 <template>
   <main>
     <div class="container">
-
       <form @submit.prevent="handleSubmit">
-        <label for="email">Email <sup>*</sup></label><input type="text" v-model="email" id="email"
-          @input="errorMessage = ''">
-        <label for="password">Mot de passe <sup>*</sup></label><input type="password" v-model="password" id="password"
-          @input="errorMessage = ''">
+        <div>
+          <h1>Bonjour !</h1>
+          <h2>Connectez-vous pour decouvrir toutes nos fonctionnalités</h2>
+        </div>
+        <label for="email"><span>Email <sup>*</sup></span><input type="text" v-model="email" id="email"
+            @input="errorMessage = ''">
+        </label>
+        <label for="password"><span>Mot de passe <sup>*</sup></span>
+          <div>
+            <input :type="inputType" v-model="password" id="password" @input="errorMessage = ''">
+            <font-awesome-icon :icon="['far', 'eye-slash']" v-if="inputType === 'password'" @click="handlePassword" />
+            <font-awesome-icon :icon="['far', 'eye']" v-if="inputType === 'text'" @click="handlePassword" />
+
+          </div>
+        </label>
+
 
         <p v-if="isSubmitting">Connexion en cours...</p>
-        <button v-else>Se connecter</button>
+        <button v-else>Se connecter <font-awesome-icon :icon="['fas', 'arrow-right']" /> </button>
 
         <p v-if="errorMessage">{{ errorMessage }}</p>
+
+        <p>Envie de nous rejoindre ? <RouterLink :to="{ name: 'signup' }">Créer un compte</RouterLink>
+        </p>
       </form>
 
 
-
-      <p>Envie de nous rejoindre ? <RouterLink :to="{ name: 'signup' }">Créer un compte</RouterLink>
-      </p>
     </div>
   </main>
 </template>
@@ -80,5 +104,78 @@ const handleSubmit = async () => {
 <style scoped>
 main {
   height: calc(100vh - var(--header-height) - var(--footer-height));
+}
+
+.container {
+  background-image: url("../assets/leboncoin1-assets/illustration.png");
+  background-size: contain;
+  background-position: bottom;
+  background-repeat: no-repeat;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+}
+
+form {
+  /* border: 1px solid blue; */
+  background-color: #fff;
+  width: 480px;
+  height: 490px;
+  padding: 30px;
+  display: flex;
+  flex-direction: column;
+  justify-content: space-between;
+  box-shadow: 0 0 7px var(--grey);
+  border-radius: 15px;
+}
+
+h1 {
+  font-size: 24px;
+  font-weight: bold;
+  margin-bottom: 15px;
+}
+
+/* h2 {
+  margin-bottom: 20px;
+} */
+
+label {
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+}
+
+input {
+  height: 45px;
+  border-radius: 10px;
+  padding-left: 10px;
+}
+
+input:focus {
+  outline: none;
+}
+
+button {
+  background-color: var(--orange);
+  color: #fff;
+  font-weight: bold;
+  height: 45px;
+  font-size: 13px;
+  border: none;
+  border-radius: 10px
+}
+
+svg {
+  margin-left: 10px;
+}
+
+p:last-child {
+  text-align: center;
+}
+
+a {
+  font-weight: bold;
+  text-decoration: underline;
+
 }
 </style>

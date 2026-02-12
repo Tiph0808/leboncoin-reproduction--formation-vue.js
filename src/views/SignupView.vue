@@ -51,6 +51,7 @@ const handleSubmit = async () => {
     isSubmitting.value = false
   } else {
     errorMessage.value = "Veuillez remplir tous les champs"
+    isSubmitting.value = false
   }
 
 }
@@ -58,23 +59,26 @@ const handleSubmit = async () => {
 
 
 </script>
+
 <template>
   <main>
     <div class="container">
-
-
       <form @submit.prevent="handleSubmit">
+        <div>
+          <h1>Bonjour !</h1>
+          <h2>Inscrivez-vous pour découvrir toutes nos fonctionnalités</h2>
+        </div>
 
-        <h1>Bonjour !</h1>
-        <h2>Inscrivez-vous pour découvrir toutes nos fonctionnalités</h2>
-
-        <label for="username">Nom <sup>*</sup></label><input type="text" v-model="username" id="username">
+        <label for="username"><span>Nom <sup>*</sup></span><input type="text" v-model="username" id="username"
+            @input="errorMessage = ''"></label>
         <!-- la balise sup sert a afficher l'étoile en tant qu'exposant -->
-        <label for="email">Email <sup>*</sup></label><input type="email" v-model="email" id="email">
-        <label for="password">Password <sup>*</sup></label><input type="password" v-model="password" id="password">
+        <label for="email"><span>Email <sup>*</sup></span><input type="email" v-model="email" id="email"
+            @input="errorMessage = ''"></label>
+        <label for="password"><span>Password <sup>*</sup></span><input type="password" v-model="password" id="password"
+            @input="errorMessage = ''"></label>
 
         <p v-if="isSubmitting">Inscription en cours...</p>
-        <button v-else>S'inscrire</button>
+        <button v-else>S'inscrire <font-awesome-icon :icon="['fas', 'arrow-right']" /></button>
 
         <p v-if="errorMessage">{{ errorMessage }}</p>
 
@@ -84,11 +88,84 @@ const handleSubmit = async () => {
         </p>
 
       </form>
-
-
     </div>
   </main>
 </template>
 
 
-<style scoped></style>
+<style scoped>
+main {
+  height: calc(100vh - var(--header-height) - var(--footer-height))
+}
+
+.container {
+  background-image: url('../assets/leboncoin1-assets/illustration.png');
+  background-size: contain;
+  background-position: bottom;
+  background-repeat: no-repeat;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+
+}
+
+form {
+  /* border: 1px solid blue; */
+  background-color: #fff;
+  width: 480px;
+  height: 490px;
+  padding: 30px;
+  display: flex;
+  flex-direction: column;
+  justify-content: space-between;
+  box-shadow: 0 0 7px var(--grey);
+  border-radius: 15px;
+}
+
+h1 {
+  font-size: 24px;
+  font-weight: bold;
+  margin-bottom: 15px;
+}
+
+
+label {
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+}
+
+input {
+  height: 45px;
+  border-radius: 10px;
+  padding-left: 10px;
+}
+
+input:focus {
+  outline: none;
+}
+
+button {
+  background-color: var(--orange);
+  color: #fff;
+  font-weight: bold;
+  height: 45px;
+  font-size: 13px;
+  border: none;
+  border-radius: 10px
+}
+
+svg {
+  margin-left: 10px;
+}
+
+p:last-child {
+  text-align: center;
+}
+
+a {
+  font-weight: bold;
+  text-decoration: underline;
+
+}
+</style>

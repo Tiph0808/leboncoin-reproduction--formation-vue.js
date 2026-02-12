@@ -12,9 +12,11 @@ const router = useRouter()
 const removeInfos = () => {
   // au clic je supprime les infos: jwt(userToken) et userName du provider :
   GlobalStore.userToken.value = '',
+
     GlobalStore.userName.value = '',
     // Quand ces valeurs sont à zero je redirige l'utilisateur vers la page d'acceuil:
     router.push({ name: 'home' })
+
 }
 
 
