@@ -3,6 +3,7 @@ import './assets/main.css'
 import { createApp, ref } from 'vue'
 import App from './App.vue'
 import router from './router'
+import VueCookies from 'vue-cookies'
 
 import { library } from '@fortawesome/fontawesome-svg-core'
 
@@ -50,21 +51,29 @@ const app = createApp(App)
 app.component('font-awesome-icon', FontAwesomeIcon)
 app.use(router)
 
-const userToken = ref('')
+const savedToken = VueCookies.get('userToken')
+const savedName = VueCookies.get('userName')
+
+const userToken = ref(savedToken || '')
+
 const changeToken = (token) => {
   userToken.value = token
+  VueCookies.set('userToken', token)
 }
 
-const userName = ref('')
+const userName = ref(savedName || '')
 const changeName = (name) => {
   userName.value = name
+  VueCookies.set('userName', name)
 }
 
 app.provide('GlobalStore', {
   userToken: userToken,
   userName: userName,
+
   changeToken: changeToken,
   changeName: changeName,
 })
 
+app.use(VueCookies)
 app.mount('#app') // tjs en dernier!

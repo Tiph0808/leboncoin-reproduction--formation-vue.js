@@ -2,6 +2,7 @@
 import { RouterLink } from 'vue-router';
 import { ref, inject } from 'vue';
 import axios from 'axios';
+
 import { useRouter } from 'vue-router'; // jimporte use router pour pouvoir envoyer mon utilisateur vers la page home si la requete a reussi
 
 // je declenche la methode userRouter et stocke ce qu'elle renvoie dans la variable router
@@ -40,7 +41,9 @@ const handleSubmit = async () => {
       console.log(data)
       // pour stocker mes infos dans le globalStore j'appelle les differentes fonctions crées dans mon provider :
       GlobalStore.changeToken(data.jwt)
+
       GlobalStore.changeName(data.user.username) // meme si on s'identifie avec l'eamil, on recoit le username crée lors de l'inscription dans la reponse, il se trouve a la clé data.user.username
+
       // si ma requete est successful je renvoie mon utilisateur vers la page d'acceuil :
       router.push({ name: 'home' })
     } catch (error) {
@@ -50,8 +53,6 @@ const handleSubmit = async () => {
   } else {
     errorMessage.value = 'Veuillez remplir tous les champs'
     isSubmitting.value = false // sinon le bouton ne reapparaitra pas!
-
-
   }
 }
 

@@ -4,7 +4,7 @@ import BtnPublishOffer from './BtnPublishOffer.vue'
 import { RouterLink } from 'vue-router'
 import { inject } from 'vue';
 import { useRouter } from 'vue-router';
-
+import VueCookies from 'vue-cookies'
 // j'injecte mon store pour voir acces a ses infos
 const GlobalStore = inject('GlobalStore')
 const router = useRouter()
@@ -12,10 +12,12 @@ const router = useRouter()
 const removeInfos = () => {
   // au clic je supprime les infos: jwt(userToken) et userName du provider :
   GlobalStore.userToken.value = '',
-
     GlobalStore.userName.value = '',
-    // Quand ces valeurs sont à zero je redirige l'utilisateur vers la page d'acceuil:
-    router.push({ name: 'home' })
+    // Au clic je supprime mes cookies
+    VueCookies.remove('userToken')
+  VueCookies.remove('userName')
+  // Quand ces valeurs sont à zero je redirige l'utilisateur vers la page d'acceuil:
+  router.push({ name: 'home' })
 
 }
 
