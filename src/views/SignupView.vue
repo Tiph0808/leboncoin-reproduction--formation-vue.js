@@ -3,7 +3,7 @@ import { ref, inject } from 'vue';
 import { RouterLink } from 'vue-router';
 import axios from 'axios';
 import { useRouter } from 'vue-router';
-
+// import VueCookies from 'vue-cookies'
 const username = ref('')
 const email = ref('')
 const password = ref('')
@@ -45,8 +45,21 @@ const handleSubmit = async () => {
         password: password.value
       })
       console.log('response >>>', data)
-      GlobalStore.changeToken(data.jwt) // Pour verifier que le global store a bien été modifié --> Vue devtools : je regarde ce qu'il y a dans mon global store : je dois voir que la valeur de userToken est maintenant egale au jwt reçu
-      GlobalStore.changeName(data.user.username)
+      GlobalStore.changeUserInfos({
+        username: data.user.username,
+        token: data.jwt
+      })
+      // Pour verifier que le global store a bien été modifié --> Vue devtools : je regarde ce qu'il y a dans mon global store : je dois voir que la valeur de userInfos est maintenant egale a un objet avec ces deux clés
+
+      // Pour rendre la connexion persistante : Je crée mon cookie avec ces infos
+      // VueCookies.set('userInfos', {
+      //   username: data.user.username,
+      //   token: data.jwt
+      // })
+      // Finalement je l'ai cré dans main.js  des que je reçcois les infos apres connexion ou inscription
+      // (ça me permet de n'écrire le code pour le crée que dans un seul fichier(main.js) au lieu de 2(loginView et signUpView) --> OPTIMISATION :) )
+
+
       // une fois connecté on veut naviguer vers la page d'acceuil grace a la methode push appliqué a router ( je dois importer useRouter avant)
       router.push({ name: 'home' })
     } catch (error) {

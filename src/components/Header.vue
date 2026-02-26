@@ -5,23 +5,19 @@ import { RouterLink } from 'vue-router'
 import { inject } from 'vue';
 import { useRouter } from 'vue-router';
 import VueCookies from 'vue-cookies'
+
 // j'injecte mon store pour voir acces a ses infos
 const GlobalStore = inject('GlobalStore')
 const router = useRouter()
 
-const removeInfos = () => {
+const disconnectUser = () => {
   // au clic je supprime les infos: jwt(userToken) et userName du provider :
-  GlobalStore.userToken.value = '',
-    GlobalStore.userName.value = '',
-    // Au clic je supprime mes cookies
-    VueCookies.remove('userToken')
-  VueCookies.remove('userName')
+  GlobalStore.changeUserInfos(null)
+  // Et je supprime mon cookie : NE PAS OUBLIER !!
+  VueCookies.remove('userInfos')
   // Quand ces valeurs sont à zero je redirige l'utilisateur vers la page d'acceuil:
   router.push({ name: 'home' })
-
 }
-
-
 
 </script>
 
@@ -43,19 +39,20 @@ const removeInfos = () => {
 
 
         <div class="connectionPart">
-          <RouterLink :to="{ name: 'login' }" v-if="!GlobalStore.userToken.value">
+          <RouterLink :to="{ name: 'login' }" v-if="!GlobalStore.userInfos.value">
             <!-- si le jwt n'existe pas alors jaffiche cette div -->
             <font-awesome-icon :icon="['far', 'user']" />
             <p>Se connecter</p>
 
           </RouterLink>
 
-          <div v-else>
+          <div v-else class="disconnectPart">
             <!-- si il existe j'affiche le nom du user et un icon pour se deconnecter : au clic : "le token et le username sont supprimés du fournisseur de dépendance et l'utilisateur est redirigé vers la page d'accueil." -->
-
-            <p>{{ GlobalStore.userName }}</p>
-
-            <font-awesome-icon :icon="['fas', 'sign-out-alt']" @click="removeInfos" />
+            <div>
+              <font-awesome-icon :icon="['far', 'user']" />
+              <p>{{ GlobalStore.userInfos.value.username }}</p>
+            </div>
+            <font-awesome-icon :icon="['fas', 'sign-out-alt']" @click="disconnectUser" />
 
 
 
@@ -172,6 +169,21 @@ input:focus {
 .connectionPart svg {
   font-size: 18px;
 }
+
+/*---- DisconnexionPart ----*/
+.disconnectPart {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+}
+
+.disconnectPart > div {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 5px;
+}
+
 
 /*----- BOTTOM-PART------ */
 

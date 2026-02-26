@@ -2,7 +2,7 @@
 import { RouterLink } from 'vue-router';
 import { ref, inject } from 'vue';
 import axios from 'axios';
-
+// import VueCookies from 'vue-cookies'
 import { useRouter } from 'vue-router'; // jimporte use router pour pouvoir envoyer mon utilisateur vers la page home si la requete a reussi
 
 // je declenche la methode userRouter et stocke ce qu'elle renvoie dans la variable router
@@ -39,15 +39,27 @@ const handleSubmit = async () => {
         password: password.value
       })
       console.log(data)
-      // pour stocker mes infos dans le globalStore j'appelle les differentes fonctions crées dans mon provider :
-      GlobalStore.changeToken(data.jwt)
+      // pour stocker mes infos dans le globalStore j'appelle la  fonction crée dans mon provider :
+      GlobalStore.changeUserInfos({
+        username: data.user.username,
+        token: data.jwt
+      })  // meme si on s'identifie avec l'eamil, on recoit le username crée lors de l'inscription dans la reponse, il se trouve a la clé data.user.username
 
-      GlobalStore.changeName(data.user.username) // meme si on s'identifie avec l'eamil, on recoit le username crée lors de l'inscription dans la reponse, il se trouve a la clé data.user.username
+      // Pour rendre la connexion persistante : Je crée mon cookie avec ces infos
+      // VueCookies.set('userInfos', {
+      //   username: data.user.username,
+      //   token: data.jwt
+      // })
+      // Finalement je l'ai cré dans main.js  des que je reçcois les infos apres connexion ou inscription
+      // (ça me permet de n'écrire le code pour le crée que dans un seul fichier(main.js) au lieu de 2(loginView et signUpView) --> OPTIMISATION :) )
+
 
       // si ma requete est successful je renvoie mon utilisateur vers la page d'acceuil :
       router.push({ name: 'home' })
+      // sinon j'affiche un message d'erreur
     } catch (error) {
       console.log('catch >>>', error)
+      errorMessage.value = 'Un problème est survenu, veuillez réessayer plus tard'
     }
     isSubmitting.value = false
   } else {

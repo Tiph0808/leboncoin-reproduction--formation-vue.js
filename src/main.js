@@ -50,30 +50,21 @@ library.add(
 const app = createApp(App)
 app.component('font-awesome-icon', FontAwesomeIcon)
 app.use(router)
+app.use(VueCookies)
 
-const savedToken = VueCookies.get('userToken')
-const savedName = VueCookies.get('userName')
+// J'initialise mam ref qui contiendra plus tard les infos de connexion envoyées par login ou signup (le token (jwt) et le name)
+// je l'initialise a null ou a la valeur de moncookie si il y en a un de crée auparavant
+const userInfos = ref(VueCookies.get('userInfos') || null)
 
-const userToken = ref(savedToken || '')
-
-const changeToken = (token) => {
-  userToken.value = token
-  VueCookies.set('userToken', token)
-}
-
-const userName = ref(savedName || '')
-const changeName = (name) => {
-  userName.value = name
-  VueCookies.set('userName', name)
+const changeUserInfos = (infos) => {
+  userInfos.value = infos
+  // Pour rendre la connexion persistante : Je crée mon cookie avec ces infos
+  VueCookies.set('userInfos', infos)
 }
 
 app.provide('GlobalStore', {
-  userToken: userToken,
-  userName: userName,
-
-  changeToken: changeToken,
-  changeName: changeName,
+  userInfos: userInfos,
+  changeUserInfos: changeUserInfos,
 })
 
-app.use(VueCookies)
 app.mount('#app') // tjs en dernier!
