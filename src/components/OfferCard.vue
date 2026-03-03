@@ -84,16 +84,15 @@ const formatedPrice = computed(() => {
   <RouterLink :to="{ name: 'offer', params: { id: offerInfos.id } }" class="offerCard">
     <div>
       <div class="ownerPart">
-        <img
-          class="avatar"
-          v-if="offerInfos.attributes.owner.data.attributes.avatar.data"
-          :src="offerInfos.attributes.owner.data.attributes.avatar.data.attributes.url"
-          alt=""
-        />
-        <p>{{ offerInfos.attributes.owner.data.attributes.username }}</p>
+        <img class="avatar" v-if="offerInfos.attributes.owner.data.attributes.avatar.data"
+          :src="offerInfos.attributes.owner.data.attributes.avatar.data.attributes.url" alt="" />
+        <p v-if="offerInfos.attributes.owner.data.attributes.username">{{
+          offerInfos.attributes.owner.data.attributes.username }}</p>
       </div>
 
-      <img :src="offerInfos.attributes.pictures.data[0].attributes.url" alt="" />
+      <img
+        v-if="offerInfos.attributes.pictures && offerInfos.attributes.pictures.data && offerInfos.attributes.pictures.data.length > 0"
+        :src="offerInfos.attributes.pictures.data[0].attributes.url" alt="" />
 
       <p>{{ offerInfos.attributes.title }}</p>
       <!-- <p>{{ offerInfos.attributes.price }} €</p> -->
@@ -122,7 +121,8 @@ const formatedPrice = computed(() => {
   align-items: center;
   gap: 10px;
   margin-bottom: 10px;
-  height: 30px; /* on donne une hauteur pour avoir le meme rendu visuel qu il y ait un avatar ou pas */
+  height: 30px;
+  /* on donne une hauteur pour avoir le meme rendu visuel qu il y ait un avatar ou pas */
 }
 
 .avatar {
@@ -131,6 +131,7 @@ const formatedPrice = computed(() => {
   border-radius: 50%;
   object-fit: cover;
 }
+
 .ownerPart p {
   font-weight: bold;
   font-size: 14px;

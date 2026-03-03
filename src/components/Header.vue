@@ -2,13 +2,15 @@
 <script setup>
 import BtnPublishOffer from './BtnPublishOffer.vue'
 import { RouterLink } from 'vue-router'
-import { inject } from 'vue';
-import { useRouter } from 'vue-router';
+import { inject, ref } from 'vue';
+import { useRouter, useRoute } from 'vue-router';
 import VueCookies from 'vue-cookies'
 
 // j'injecte mon store pour voir acces a ses infos
 const GlobalStore = inject('GlobalStore')
 const router = useRouter()
+
+const route = useRoute()
 
 const disconnectUser = () => {
   // au clic je supprime les infos: jwt(userToken) et userName du provider :
@@ -18,6 +20,23 @@ const disconnectUser = () => {
   // Quand ces valeurs sont à zero je redirige l'utilisateur vers la page d'acceuil:
   router.push({ name: 'home' })
 }
+
+const search = ref('')
+const handleSubmit = () => {
+  console.log(search.value)
+  console.log(route.query)
+  const queries = { ...route.query }
+
+  if (search.value) {
+    queries.title = search.value
+  } else {
+    delete queries.title
+  }
+  // Penser a mettre la page a un
+  queries.page = 1
+  router.push({ name: 'home', query: queries })
+}
+
 
 </script>
 
@@ -32,8 +51,11 @@ const disconnectUser = () => {
         <div class="middlePart">
           <BtnPublishOffer />
           <div>
-            <input type="text" id="search" placeholder="Rechercher sur le bon coin" />
-            <font-awesome-icon :icon="['fas', 'search']" />
+            <form @submit.prevent="handleSubmit">
+              <input type="text" id="search" placeholder="Rechercher sur le bon coin" v-model="search" />
+
+              <button><font-awesome-icon :icon="['fas', 'search']" /></button>
+            </form>
           </div>
         </div>
 
@@ -131,19 +153,24 @@ img {
   gap: 20px;
 }
 
-.middlePart > div {
+.middlePart > div > form {
   background-color: var(--light-grey);
   padding: 5px;
   border-radius: 10px;
   display: flex;
+  align-items: center;
 }
 
-.middlePart > div svg {
+.middlePart > div > form svg {
   background-color: var(--orange);
   padding: 7px;
   border-radius: 5px;
   box-sizing: content-box;
   /* On ajoute box-sizing:content-box car au niveau de l'icone car il faut ecraser la pp box sizing:border-box sinon l'icone est trop petit*/
+}
+
+.middlePart > div > form button {
+  border: none;
 }
 
 input {
