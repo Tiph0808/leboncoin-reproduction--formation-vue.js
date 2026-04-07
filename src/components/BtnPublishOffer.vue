@@ -1,7 +1,19 @@
-<script setup></script>
+<script setup>
+
+import { RouterLink } from 'vue-router'
+// import { inject } from 'vue'
+// const GlobalStore = inject('GlobalStore')
+
+</script>
 
 <template>
-  <button><font-awesome-icon :icon="['far', 'square-plus']" />Déposer une annonce</button>
+  <button>
+    <RouterLink :to="{ name: 'publish' }">
+      <font-awesome-icon :icon="['far', 'square-plus']" />Déposer une annonce
+    </RouterLink>
+  </button>
+
+
 </template>
 <style scoped>
 button {
@@ -12,7 +24,8 @@ button {
   color: white;
   font-family: inherit;
   font-weight: bold;
-  font-size: inherit; /* par defaut les boutons ont une taille de police plus petite, ici on veut qu'elle soit identique au reste du header */
+  font-size: inherit;
+  /* par defaut les boutons ont une taille de police plus petite, ici on veut qu'elle soit identique au reste du header */
 }
 
 svg {

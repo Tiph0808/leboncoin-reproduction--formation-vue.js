@@ -19,6 +19,8 @@ const props = defineProps(['sort', 'pricemin', 'pricemax', 'title', 'page']) // 
 console.log(props) // affiche dans la console un objet avec les clés pricemin, pricemax et sort
 
 const offersList = ref([])
+// je crée une ref pour ma pagination
+// je l'initialise a une page, par defaut
 const numOfPages = ref(1)
 
 onMounted(() => {
@@ -33,16 +35,16 @@ onMounted(() => {
       if (props.pricemin) {
         priceFilters = priceFilters + `&filters[price][$gte]=${props.pricemin}`
       }
-      console.log("page envoyé:", props.page)
+      console.log('page envoyée:', props.page)
       const { data } = await axios.get(
         // on a populate d'autres clés de l'objet offer qui n'apparaissaient pas par defaut afin d'acceder à toutes les infos (voir complement d'informations/querys => grand cahier)
-        `https://site--strapileboncoin--2m8zk47gvydr.code.run/api/offers?populate[0]=pictures&populate[1]=owner.avatar${priceFilters}&sort[0]=${props.sort}&filters[title][$containsi]=${props.title}&pagination[page]=${props.page}&pagination[pageSize]=10`,
-
+        `http://localhost:1337/api/offers?populate[0]=picture&populate[1]=owner.avatar${priceFilters}&sort[0]=${props.sort}&filters[title][$containsi]=${props.title}&pagination[page]=${props.page}&pagination[pageSize]=10`,
       )
       console.log('data', data) // infos sur les pages a la clé meta
       // console.log(data.data)
       offersList.value = data.data
       // console.log(offersList.value)
+      // je transmet a num of pages la valeur de pagecount qui se trouve dans la clé méta de ma reponse
       numOfPages.value = data.meta.pagination.pageCount
     } catch (error) {
       console.log(error.message)
@@ -65,19 +67,19 @@ onMounted(() => {
 //     console.log(error.message)
 //   }
 // }
-
 </script>
 
 <template>
   <main>
     <p v-if="offersList.length === 0" class="container">Loading...</p>
     <div v-else class="container">
-
+      <!--Filters My way  -->
       <!-- <Filters @change-filters="handleSearch" /> -->
 
       <!-- Je transmet les props à mon composant filter -->
       <!-- Ici je dois leur donner une valeur ! (d'ailleurs cette valeur definira leur typeof si on les as defini de facon simple dans le script) -->
       <Filters :sort="sort" :pricemin="pricemin" :pricemax="pricemax" :title="title" :page="page" />
+      <!-- RMQ : Je n'oublie pas de transmettre les query title et page a mon composant filters aussi! pour pouvoir applique des filtres de prix tout en gardant le filtre entré dans l'input title du header si il y en a un :)-->
       <p>Des millions de petites annonces et autant d’occasions de se faire plaisir</p>
 
       <TimeToSell />
@@ -88,7 +90,8 @@ onMounted(() => {
 
       <Pagination :sort="sort" :pricemin="pricemin" :pricemax="pricemax" :title="title" :page="page"
         :numOfPages="numOfPages" />
-
+      <!-- ce composant a besoin de la query page mais aussi de toutes les autres! car si je change de page je veux garder mes filtres si jen ai mis !
+      pagination aura aussi besoin de l'info nombre total de page numOfPages, recue dans ma requete-->
     </div>
   </main>
 </template>

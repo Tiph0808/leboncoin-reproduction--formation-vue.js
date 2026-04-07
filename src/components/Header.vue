@@ -2,14 +2,16 @@
 <script setup>
 import BtnPublishOffer from './BtnPublishOffer.vue'
 import { RouterLink } from 'vue-router'
-import { inject, ref } from 'vue';
-import { useRouter, useRoute } from 'vue-router';
+import { inject, ref } from 'vue'
+import { useRouter, useRoute } from 'vue-router'
 import VueCookies from 'vue-cookies'
 
 // j'injecte mon store pour voir acces a ses infos
 const GlobalStore = inject('GlobalStore')
 const router = useRouter()
 
+// je dois utiliser useRoute pour recuperer les props recues par la route car mon header est en dehors de routerView
+// car useRoute donne acces aux differentes queries de ma route (route.query)
 const route = useRoute()
 
 const disconnectUser = () => {
@@ -25,8 +27,11 @@ const search = ref('')
 const handleSubmit = () => {
   console.log(search.value)
   console.log(route.query)
+  // header est en dehors de RouterView et donc de Homeview, donc je ne peux pas recupérer les props reçues pas la route ( je ne peux pas les passer depuis homeview)
+  // Donc ici je vais utiliser useRoute pour  acceder aux queries et en faire une copie
   const queries = { ...route.query }
 
+  // je modifie es queries :
   if (search.value) {
     queries.title = search.value
   } else {
@@ -34,10 +39,9 @@ const handleSubmit = () => {
   }
   // Penser a mettre la page a un
   queries.page = 1
+  // je transmet mes queries modifiées à la redirection
   router.push({ name: 'home', query: queries })
 }
-
-
 </script>
 
 <template>
@@ -52,20 +56,23 @@ const handleSubmit = () => {
           <BtnPublishOffer />
           <div>
             <form @submit.prevent="handleSubmit">
-              <input type="text" id="search" placeholder="Rechercher sur le bon coin" v-model="search" />
+              <input
+                type="text"
+                id="search"
+                placeholder="Rechercher sur le bon coin"
+                v-model="search"
+              />
 
               <button><font-awesome-icon :icon="['fas', 'search']" /></button>
             </form>
           </div>
         </div>
 
-
         <div class="connectionPart">
           <RouterLink :to="{ name: 'login' }" v-if="!GlobalStore.userInfos.value">
             <!-- si le jwt n'existe pas alors jaffiche cette div -->
             <font-awesome-icon :icon="['far', 'user']" />
             <p>Se connecter</p>
-
           </RouterLink>
 
           <div v-else class="disconnectPart">
@@ -75,15 +82,8 @@ const handleSubmit = () => {
               <p>{{ GlobalStore.userInfos.value.username }}</p>
             </div>
             <font-awesome-icon :icon="['fas', 'sign-out-alt']" @click="disconnectUser" />
-
-
-
           </div>
-
-
         </div>
-
-
       </div>
 
       <div class="bottomPart">
@@ -210,7 +210,6 @@ input:focus {
   align-items: center;
   gap: 5px;
 }
-
 
 /*----- BOTTOM-PART------ */
 

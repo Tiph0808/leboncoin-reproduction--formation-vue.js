@@ -39,7 +39,7 @@ const handleSubmit = async () => {
   if (username.value && email.value && password.value) {
     try {
       // je fais ma reqeute en interrogeant l'url indiquée et en envoyant mes infos en 2eme argument sous forme d'objet avec les clés necessaires pour créer mon utilisateur
-      const { data } = await axios.post('https://site--strapileboncoin--2m8zk47gvydr.code.run/api/auth/local/register', {
+      const { data } = await axios.post('http://localhost:1337/api/auth/local/register', {
         username: username.value,
         email: email.value,
         password: password.value
@@ -47,7 +47,8 @@ const handleSubmit = async () => {
       console.log('response >>>', data)
       GlobalStore.changeUserInfos({
         username: data.user.username,
-        token: data.jwt
+        token: data.jwt,
+        id: data.user.id
       })
       // Pour verifier que le global store a bien été modifié --> Vue devtools : je regarde ce qu'il y a dans mon global store : je dois voir que la valeur de userInfos est maintenant egale a un objet avec ces deux clés
 

@@ -19,7 +19,7 @@ const pictures = ref([])
 onMounted(async () => {
   try {
     const { data } = await axios.get(
-      `https://site--strapileboncoin--2m8zk47gvydr.code.run/api/offers/${props.id}?populate[0]=pictures&populate[1]=owner.avatar`,
+      `http://localhost:1337/api/offers/${props.id}?populate[0]=picture&populate[1]=owner.avatar`,
     )
     // console.log(
     //   'Response OfferView >>> ',
@@ -28,7 +28,7 @@ onMounted(async () => {
     // on utilise ce console log pour verifier l'endroit où on recupere les infos specifiques (que l'on veut afficher) dans l'objet recu (data) En effet, on a populate notre requete avec des querys pour pouvoir acceder a toutes les clés qui contiennent les infos necessaires (mais qui sont masquées par defaut par strapi) : l'objet recu contient maintenant une multitude des clés et "sous clés" --> les chemins risquent d'etre longs pour acceder a la clé concernée! c'est + safe de verifier qu on est au bon endroit avec le console log avant de mettre l'info dans le template :) ( où on remplacera data.data par offerInfos car on va lui attribuer cette valeur)
 
     offerInfos.value = data.data
-    pictures.value = data.data.attributes.pictures.data
+    pictures.value = data.data.attributes.picture.data
     // console.log(offerInfos.value)
     console.log(pictures.value)
   } catch (error) {
@@ -69,21 +69,13 @@ const cycleList = computed(() => {
           <!-- <img :src="offerInfos.attributes.pictures.data[0].attributes.url" alt="" /> -->
           <!-- <p>{{ cycleList }}</p> = s'affiche un objet avec une clé state qui elle meme est un objet, notre image se trouve à la clé attributes.url : -->
 
-          <font-awesome-icon
-            :icon="['fas', 'chevron-left']"
-            @click="cycleList.prev()"
-            v-if="pictures?.length > 1"
-          />
+          <font-awesome-icon :icon="['fas', 'chevron-left']" @click="cycleList.prev()" v-if="pictures?.length > 1" />
           <!--"au clic je veux utiliser l'une des methodes fournies renvoyées par computed , je pars de cycleList et je  fais appel a la methode prev
           je veux aussi que mes icones s'affichent uniquement si il y a plus d une photo dans mon tableau
           attention : si il ny a aucune photo, que le tab n'existe pas le .length va faire crasher, donc on rajoute une securite en iserant un ? juste apres le l'endroit ou est censé se trouve le tabealu de photos : ici pictures?.length = evite le crash  ar stop la lecture du code si la la valeur recherchée n'existe pas-->
           <img :src="cycleList.state.value.attributes.url" alt="" />
           <!-- la valeur "active" de notre img est dans state -->
-          <font-awesome-icon
-            :icon="['fas', 'chevron-right']"
-            @click="cycleList.next()"
-            v-if="pictures?.length > 1"
-          />
+          <font-awesome-icon :icon="['fas', 'chevron-right']" @click="cycleList.next()" v-if="pictures?.length > 1" />
         </div>
         <p class="title">{{ offerInfos.attributes.title }}</p>
         <p class="price">{{ price }} €</p>
@@ -100,11 +92,8 @@ const cycleList = computed(() => {
       <div class="rightColumn">
         <div class="owner">
           <div>
-            <img
-              v-if="offerInfos.attributes.owner.data.attributes.avatar.data"
-              :src="offerInfos.attributes.owner.data.attributes.avatar.data.attributes.url"
-              alt=""
-            />
+            <img v-if="offerInfos.attributes.owner.data.attributes.avatar.data"
+              :src="offerInfos.attributes.owner.data.attributes.avatar.data.attributes.url" alt="" />
 
             <p>{{ offerInfos.attributes.owner.data.attributes.username }}</p>
           </div>
@@ -132,6 +121,7 @@ main {
 .container {
   display: flex;
   gap: 20px;
+  padding-top: 40px;
 }
 
 /*---- LEFT SIDE ----*/
@@ -144,6 +134,7 @@ main {
   display: flex;
   align-items: center;
 }
+
 .carrousel svg {
   font-size: 20px;
 }
@@ -213,6 +204,7 @@ h2 + p {
   width: 65px;
   border-radius: 50%;
 }
+
 .owner > div p {
   font-size: 18px;
   font-weight: bold;

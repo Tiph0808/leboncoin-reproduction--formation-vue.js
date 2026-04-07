@@ -20,6 +20,7 @@ import {
   faArrowRight,
   faAngleLeft,
   faAngleRight,
+  faCamera,
 } from '@fortawesome/free-solid-svg-icons'
 
 import {
@@ -49,6 +50,7 @@ library.add(
   faArrowRight,
   faAngleLeft,
   faAngleRight,
+  faCamera,
 )
 
 const app = createApp(App)

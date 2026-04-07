@@ -4,17 +4,18 @@ import { ref, inject } from 'vue';
 import axios from 'axios';
 // import VueCookies from 'vue-cookies'
 import { useRouter } from 'vue-router'; // jimporte use router pour pouvoir envoyer mon utilisateur vers la page home si la requete a reussi
-
+import { useRoute } from 'vue-router'// j'importe useRoute pour acceder aux queries de cette route dont j'ai besoin pour ma redirection après ma requete
 // je declenche la methode userRouter et stocke ce qu'elle renvoie dans la variable router
 const router = useRouter()
-
+// je declenche la methode userRoute et stocke ce qu'elle renvoie dans la variable route
+const route = useRoute()
 // jinjecte mon provider
 const GlobalStore = inject('GlobalStore')
 
 
 // VALEURS REACTIVES
 
-const email = ref('joel@aol.com')
+const email = ref('claude@mail.com')
 const password = ref('password')
 
 // je cree mes ref pour l'affichage conditionnel:
@@ -34,7 +35,7 @@ const handleSubmit = async () => {
   isSubmitting.value = true
   if (email.value && password.value) {
     try {
-      const { data } = await axios.post('https://site--strapileboncoin--2m8zk47gvydr.code.run/api/auth/local', {
+      const { data } = await axios.post('http://localhost:1337/api/auth/local', {
         identifier: email.value,
         password: password.value
       })
@@ -42,7 +43,8 @@ const handleSubmit = async () => {
       // pour stocker mes infos dans le globalStore j'appelle la  fonction crée dans mon provider :
       GlobalStore.changeUserInfos({
         username: data.user.username,
-        token: data.jwt
+        token: data.jwt,
+        id: data.user.id
       })  // meme si on s'identifie avec l'eamil, on recoit le username crée lors de l'inscription dans la reponse, il se trouve a la clé data.user.username
 
       // Pour rendre la connexion persistante : Je crée mon cookie avec ces infos
@@ -54,8 +56,8 @@ const handleSubmit = async () => {
       // (ça me permet de n'écrire le code pour le crée que dans un seul fichier(main.js) au lieu de 2(loginView et signUpView) --> OPTIMISATION :) )
 
 
-      // si ma requete est successful je renvoie mon utilisateur vers la page d'acceuil :
-      router.push({ name: 'home' })
+      // si ma requete est successful je renvoie mon utilisateur vers la page qu'il voulait initialement Si la query redirect a été ajoutée a cette route dans index.js ou vers la page d'acceuil :
+      router.push({ name: route.query.redirect || 'home' })
       // sinon j'affiche un message d'erreur
     } catch (error) {
       console.log('catch >>>', error)

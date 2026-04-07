@@ -23,10 +23,11 @@ const router = useRouter()
 
 // Je declare la fonction qui sera déclenchée à la soumission de mon formulaire :
 const handleSubmit = () => {
+  // je commence par faire une copie de mes props dans un nouvel objet queries
   const queries = { ...props }
   // si jai rempli qq chose dans les input je veux ajouter la clé pricemin à mes queries (ou la modifier, dans les 2 cas c'est la meme ligne de code (query.cléàAjouter/Modifier = valeur de l'input)
   // si le champ est vide alors je veux effacer cette query de mon url
-  // donc je dois effacer la clé correspondante dans l'objet queries
+  // donc je dois effacer la clé correspondante dans le nouvel'objet queries que jai crée
   if (priceMin.value) {
     queries.pricemin = priceMin.value
   } else {
@@ -43,9 +44,10 @@ const handleSubmit = () => {
     delete queries.sort
   }
   // Penser a mettre la page a un
+  // de cette facon si on change certains filtres de notre recherche on obtiendra tjs la premiere page des resultats
   queries.page = 1
 
-  router.push({ name: 'home', query: queries })
+  router.push({ name: 'home', query: queries }) // je veuxx acceder a la route 'home' en lui transmettant une clé query: avec toutes les modifications faites dans ce composant filters
 }
 
 // // My way :
@@ -66,23 +68,35 @@ const handleSubmit = () => {
 //   priceMax: parseInt(priceMax.value),
 //   sortOrder: sortOrder.value
 // })
-
 </script>
 
 <template>
-
   <!-- <form @submit.prevent="sendFilters"> -->
   <form @submit.prevent="handleSubmit">
     <div>
       <p>Prix</p>
       <div class="priceBloc">
         <div>
-          <input type="number" name="priceMin" id="priceMin" placeholder="Minimum" min="0" v-model="priceMin">
+          <input
+            type="number"
+            name="priceMin"
+            id="priceMin"
+            placeholder="Minimum"
+            min="0"
+            v-model="priceMin"
+          />
           <!-- RMQ : On rajoutte l'attribut min pour ne pas autoriser que la valeur soit en dessous de zero -->
           <label for="PriceMin">€</label>
         </div>
         <div>
-          <input type="number" name="priceMax" id="priceMax" placeholder="Maximum" :min=priceMin v-model="priceMax">
+          <input
+            type="number"
+            name="priceMax"
+            id="priceMax"
+            placeholder="Maximum"
+            :min="priceMin"
+            v-model="priceMax"
+          />
           <!-- RMQ : On rajoutte l'attribut min , avec la directive v-bind, pour que cette valeur ne soit jamais inf a celle de priceMin entrée précedemment -->
           <label for="PriceMax">€</label>
         </div>
@@ -95,27 +109,26 @@ const handleSubmit = () => {
             v-model="sortOrder"></label>
         <label for="none">Pas de tri<input type="radio" id="none" name="priceSort" value="" v-model="sortOrder"></label>
       </div> -->
-
     </div>
 
     <div class="sortBloc">
       <p>Tri</p>
       <div>
         <!-- Pour trier par prix croissants/décroissants, je dois rajouter cette syntaxe en query a mon url : sort[0]=price:asc ou desc , donc je donne price:asc ou price:desc comme value a mes inputs radio : cette valeur sera celle de la a ref sort (et si pas de valeur pas de tri)-->
-        <label>Prix croissant <input type="radio" value="price:asc" id="priceAsc" v-model="sort"> </label>
-        <label>Prix décroissant <input type="radio" value="price:desc" id="priceDesc" v-model="sort"> </label>
-        <label>Pas de tri <input type="radio" value="" id="noSort" v-model="sort"> </label>
+        <label
+          >Prix croissant <input type="radio" value="price:asc" id="priceAsc" v-model="sort" />
+        </label>
+        <label
+          >Prix décroissant <input type="radio" value="price:desc" id="priceDesc" v-model="sort" />
+        </label>
+        <label>Pas de tri <input type="radio" value="" id="noSort" v-model="sort" /> </label>
         <!-- RMQ :avec Vue.js, plus besoin de l'attribut name quand on a v-model-->
       </div>
-
     </div>
 
     <button>Rechercher</button>
-
   </form>
-
 </template>
-
 
 <style scoped>
 form {
@@ -133,7 +146,6 @@ p {
 }
 
 /*-----Price bloc input-----*/
-
 
 .priceBloc {
   display: flex;
@@ -168,7 +180,6 @@ p {
   border-radius: 0 15px 15px 0;
   border-left: none;
 }
-
 
 /**------Sort Bloc---- */
 .sortBloc > div {
