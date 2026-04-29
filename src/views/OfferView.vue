@@ -1,6 +1,6 @@
 <script setup>
 import { onMounted, ref, computed } from 'vue'
-
+import { RouterLink } from 'vue-router'
 import axios from 'axios'
 import { useCycleList } from '@vueuse/core'
 
@@ -36,6 +36,7 @@ onMounted(async () => {
   }
 })
 
+// Pour que des chiffres comme 100000 s'affichent 100 000, ou bien 2500000 s'affiche 2 500 000 on utilise la pp computed
 const price = computed(() => {
   const newPrice = new Intl.NumberFormat('fr-FR').format(offerInfos.value.attributes.price)
   return newPrice
@@ -105,7 +106,9 @@ const cycleList = computed(() => {
         </div>
 
         <div class="btnPart">
-          <button>Acheter</button>
+          <button>
+            <RouterLink :to="{ name: 'payment', params: { id: props.id } }">Acheter</RouterLink>
+          </button>
           <button>Message</button>
         </div>
       </div>

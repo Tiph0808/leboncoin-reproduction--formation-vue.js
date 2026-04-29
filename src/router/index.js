@@ -57,6 +57,13 @@ const router = createRouter({
       // je dois proteger ma route :
       meta: { requireAuth: true },
     },
+    {
+      path: '/payment/:id',
+      name: 'payment',
+      component: () => import('../views/PaymentView.vue'),
+      props: true,
+      meta: { requireAuth: true },
+    },
   ],
 })
 
