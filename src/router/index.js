@@ -4,6 +4,7 @@ import SignupView from '@/views/SignupView.vue'
 import LoginView from '@/views/LoginView.vue'
 
 import { inject } from 'vue'
+import NotFoundView from '@/views/NotFoundView.vue'
 
 const router = createRouter({
   history: createWebHistory(import.meta.env.BASE_URL),
@@ -65,6 +66,15 @@ const router = createRouter({
       component: () => import('../views/PaymentView.vue'),
       props: true,
       meta: { requireAuth: true },
+    },
+
+    // Creation d'une route pour la page notFound
+    // Si l'utilisateur rentre manuellement une url incorrecte ( = il demande une route qui n'existe pas dans mon appli), je le redirige automatiquement vers cette page
+    {
+      path: '/:catchAll(.*)', // je dis a ma route qu'elle contient un params que je nomme comme je veux : ici catchAll
+      // (.*) : expression regulière qui signifie qu'on "récupere" tout
+      name: 'notFound',
+      component: NotFoundView,
     },
   ],
 })
