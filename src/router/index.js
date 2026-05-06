@@ -60,6 +60,8 @@ const router = createRouter({
     {
       path: '/payment/:id',
       name: 'payment',
+      // "lazy-loaded": long user journey to reach this view, no need to bundle it upfront
+      // ( : chargement différé, le parcours est "long" pour acceder a cette page/view (connexion obligatoire, choix annonce, cliquer sur acheter) inutile de charger si l'utilisateur n'y accede pas)
       component: () => import('../views/PaymentView.vue'),
       props: true,
       meta: { requireAuth: true },
@@ -73,11 +75,23 @@ router.beforeEach((to, from) => {
   const GlobalStore = inject('GlobalStore')
   // "si la route a un requireAuth true et qu'il n'y a pas de token enregistré"
   if (to.meta.requireAuth && !GlobalStore.userInfos.value?.token) {
-    return { name: 'login', query: { redirect: to.name } }
+    return { name: 'login', query: { redirect: to.name, id: to.params.id } }
   }
+  // if (to.meta.requireAuth && !GlobalStore.userInfos.value?.token) {
+  //   return { name: 'login', query: { redirect: to.path } }
+  // }
+
   // RMQ : le point d'interrogation apres value signifie "si GloablStore.userInfos.value est null ne cherche pas plus loin sinon va me chercher le token" . Ca evite le plantage car en js on ne peut pas acceder a la propriété d'une valeur nulle ou undefined ( ="je lis mon chemin, si jarrive a value et que c'est une valeur falsy alors jarrete de lire mon chemin")
 
-  // j'ajoute une query a la route sur laquelle je vais etre redirigéée, cette query s'appelle redirect et sa valeur est le nom de la route vers laquelle je me dirigeait avant de devoir login : la route publish, dont les infos sont dans la clé to :)
+  // Les query dans ma redirection :
+  // redirect : j'ajoute une query a la route sur laquelle je vais etre redirigéée, cette query s'appelle redirect et sa valeur est le nom de la route vers laquelle je me dirigeais avant de devoir login : la route publish, dont les infos sont dans la clé to :)
+  // id : si une id est demandé pour la route vers laquelle je voulais naviguer initialement, je veux  qu'il soit pris en compte dans la redirection. jajoute l'id de la route dans ma query. si il ny a pas d'id necessaire pour la route sur laquelle on veut etre redireiger, comme pour la route publish par exemple, to.params.id sera undefined. Une query undefined disparait simplement de l'url. donc pas besoin de ternaire ( ) pour proteger du plantage : ca ne plantera pas :)
+
+  // Pour optimiser mon code j'aurais pu ecrire query : {redirect : to.path}.
+  // En effet lorsqu'on console log to on s'apercoit qu'il existe une clé path qui contient le chemin exact de la redirection (nome de la route + params (l'id))
+  // Donc plutot que d'envoyer ces deux infos séparément en ajoutant deux clés dans mon objet query, je rajoute seulement une clé redirect et je lui transmet les infos de to.path
+  // ATTENTION : Si je fais ca je dois aussi modifié mon fichier login (voir loginView commentaires router.push)
+  // PS : J'implemente volontairement la syntaxe precedente pour comprendre la logique :)
 })
 
 export default router

@@ -3,6 +3,7 @@
 :root {
   --orange: #ec5a13;
   --light-grey: #f4f9fe;
+  --med-grey: gray;
   --light-coral: #fde5d8;
   --grey: #627c93;
   --brown: #89380f;
@@ -34,4 +35,15 @@ a {
 /* On decale le main car on a fixer le header en haut de la page */
 main {
   margin-top: var(--header-height);
+}
+
+/* Pour que les boutons soient en accord avec le style de leur conteneur parent*/
+button {
+  font-size: inherit;
+  font-family: inherit;
+}
+
+
+input {
+  outline: none;
 }

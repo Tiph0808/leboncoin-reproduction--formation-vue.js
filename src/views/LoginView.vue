@@ -56,10 +56,17 @@ const handleSubmit = async () => {
       // (ça me permet de n'écrire le code pour le crée que dans un seul fichier(main.js) au lieu de 2(loginView et signUpView) --> OPTIMISATION :) )
 
 
-      // si ma requete est successful je renvoie mon utilisateur vers la page qu'il voulait initialement Si la query redirect a été ajoutée a cette route dans index.js ou vers la page d'acceuil :
-      router.push({ name: route.query.redirect || 'home' })
-      // sinon j'affiche un message d'erreur
-    } catch (error) {
+      // si ma requete est successful je renvoie mon utilisateur vers la page qu'il voulait initialement SEULEMENT SI LA QUERY REDIRECT A ETE AJOUTEE A CETTE ROUTE DANS INDEX.JS, sinon je le renvoie vers la page d'acceuil :
+      router.push({ name: route.query.redirect || 'home', params: route.query.id ? { id: route.query.id } : {} }) // "si il y a un params id dans la query je le recupere, sinon je passe un objet vide (pas de params)"
+
+      // ATTENTION (VOIR index.js commenntaires ligne 86) : si j'ecris query : {redirect : to.path} dans mon naviguation guard, Je DOIS modifier mon router.push ici.
+      // EXPLICATIONS :
+      // Au lieu de naviguer vers ma page via un 'name' et eventuellement un params qui est l'id, je navigue grace a un PATH ( je redefini ma query redirect dans index.js si j'écris  query : {redirect:to.path} au lieu de query : { redirect: to.name, id:to.params.id})
+      // et pour le renvoyer vers la page d'acceuil j'utilise aussi le "path" de celle ci tel que defini dans index.js, en l'occurrence '/'
+      // router.push({ path: route.query.redirect || '/' })
+      // (Plus besoin de params puisqu'il seront deja dans le path que l'on a ajouté en query)
+
+    } catch (error) {  // sinon j'affiche un message d'erreur
       console.log('catch >>>', error)
       errorMessage.value = 'Un problème est survenu, veuillez réessayer plus tard'
     }
@@ -69,7 +76,6 @@ const handleSubmit = async () => {
     isSubmitting.value = false // sinon le bouton ne reapparaitra pas!
   }
 }
-
 
 // BONUS (Myway)
 
@@ -84,12 +90,6 @@ const handleSubmit = async () => {
 //     inputType.value = 'password'
 //   }
 // }
-
-
-
-
-
-
 
 </script>
 

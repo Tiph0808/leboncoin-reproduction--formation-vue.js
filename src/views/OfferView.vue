@@ -74,7 +74,7 @@ const cycleList = computed(() => {
           <!--"au clic je veux utiliser l'une des methodes fournies renvoyées par computed , je pars de cycleList et je  fais appel a la methode prev
           je veux aussi que mes icones s'affichent uniquement si il y a plus d une photo dans mon tableau
           attention : si il ny a aucune photo, que le tab n'existe pas le .length va faire crasher, donc on rajoute une securite en iserant un ? juste apres le l'endroit ou est censé se trouve le tabealu de photos : ici pictures?.length = evite le crash  ar stop la lecture du code si la la valeur recherchée n'existe pas-->
-          <img :src="cycleList.state.value.attributes.url" alt="" />
+          <img v-if="cycleList.state" :src="cycleList.state.value.attributes.url" alt="" />
           <!-- la valeur "active" de notre img est dans state -->
           <font-awesome-icon :icon="['fas', 'chevron-right']" @click="cycleList.next()" v-if="pictures?.length > 1" />
         </div>
@@ -108,6 +108,7 @@ const cycleList = computed(() => {
         <div class="btnPart">
           <button>
             <RouterLink :to="{ name: 'payment', params: { id: props.id } }">Acheter</RouterLink>
+            <!-- Dans la correction elle recupere l'id de l'offre dans la reponse a la requete, moi je la recupere direct dans les props puisqu'elle m'a ete transmise par le router independamment de la requete -->
           </button>
           <button>Message</button>
         </div>
@@ -249,7 +250,7 @@ button {
   padding: 10px 0;
   border: none;
   border-radius: 10px;
-  font-size: inherit;
+
 }
 
 button:last-child {

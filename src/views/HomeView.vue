@@ -96,6 +96,24 @@ onMounted(() => {
   </main>
 </template>
 
+
+<!-- My way :  -->
+<!-- <template>
+  <main>
+    <p v-if="offersList.length === 0">loading...</p>
+    <div v-else>
+      <RouterLink
+        v-for="offer in offersList"
+        :key="offer.id"
+        :to="{ name: 'ad', params: { id: offer.id } }"
+      >
+        <p>{{ offer.attributes.title }}</p>
+      </RouterLink>
+    </div>
+  </main>
+</template> -->
+
+
 <style scoped>
 /* main {
   border-top: 1px solid grey;
@@ -127,19 +145,3 @@ main {
   /* (defini en prenant la mesure sur le modele) */
 }
 </style>
-
-<!-- My way :  -->
-<!-- <template>
-  <main>
-    <p v-if="offersList.length === 0">loading...</p>
-    <div v-else>
-      <RouterLink
-        v-for="offer in offersList"
-        :key="offer.id"
-        :to="{ name: 'ad', params: { id: offer.id } }"
-      >
-        <p>{{ offer.attributes.title }}</p>
-      </RouterLink>
-    </div>
-  </main>
-</template> -->

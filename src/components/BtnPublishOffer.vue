@@ -22,10 +22,7 @@ button {
   padding: 5px 10px 7px 10px;
   border-radius: 10px;
   color: white;
-  font-family: inherit;
   font-weight: bold;
-  font-size: inherit;
-  /* par defaut les boutons ont une taille de police plus petite, ici on veut qu'elle soit identique au reste du header */
 }
 
 svg {
