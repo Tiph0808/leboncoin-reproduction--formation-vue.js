@@ -2,7 +2,7 @@
 <script setup>
 import BtnPublishOffer from './BtnPublishOffer.vue'
 import { RouterLink } from 'vue-router'
-import { inject, ref } from 'vue'
+import { inject, ref, watchEffect } from 'vue'
 import { useRouter, useRoute } from 'vue-router'
 import VueCookies from 'vue-cookies'
 
@@ -24,6 +24,13 @@ const disconnectUser = () => {
 }
 
 const search = ref('')
+
+// Je met un watcheffect pour que l'input se vide au click sur le logo (Pour les memes raisons que dans Filters.vue : si les props changent, watcheffect mettra a jour la ref locale)
+// I dem que ligne 13, le header etant en dehors de RouterView, il ne recoit pas les props directement. Je les recupere en utilisant useRoute()
+watchEffect(() => {
+  search.value = route.query.title
+})
+
 const handleSubmit = () => {
   console.log(search.value)
   console.log(route.query)
@@ -48,7 +55,8 @@ const handleSubmit = () => {
   <header>
     <div class="container">
       <div class="topPart">
-        <RouterLink :to="{ name: 'home' }">
+        <RouterLink :to="{ name: 'home', query: {} }">
+          <!-- je rajoute un objet query vide pour qu'au clic sur le logo, je retrouve ma home page avec TOUS les articles , je veux repartir sur une url sans queries -->
           <img src="../assets/leboncoin1-assets/logo.svg" alt="" />
         </RouterLink>
 
@@ -56,12 +64,7 @@ const handleSubmit = () => {
           <BtnPublishOffer />
           <div>
             <form @submit.prevent="handleSubmit">
-              <input
-                type="text"
-                id="search"
-                placeholder="Rechercher sur le bon coin"
-                v-model="search"
-              />
+              <input type="text" id="search" placeholder="Rechercher sur le bon coin" v-model="search" />
 
               <button><font-awesome-icon :icon="['fas', 'search']" /></button>
             </form>

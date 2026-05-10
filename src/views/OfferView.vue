@@ -25,6 +25,7 @@ onMounted(async () => {
     //   'Response OfferView >>> ',
     //   data.data.attributes.owner.data.attributes.avatar.data.attributes.url,
     // )
+    console.log('reponse requete', data)
     // on utilise ce console log pour verifier l'endroit où on recupere les infos specifiques (que l'on veut afficher) dans l'objet recu (data) En effet, on a populate notre requete avec des querys pour pouvoir acceder a toutes les clés qui contiennent les infos necessaires (mais qui sont masquées par defaut par strapi) : l'objet recu contient maintenant une multitude des clés et "sous clés" --> les chemins risquent d'etre longs pour acceder a la clé concernée! c'est + safe de verifier qu on est au bon endroit avec le console log avant de mettre l'info dans le template :) ( où on remplacera data.data par offerInfos car on va lui attribuer cette valeur)
 
     offerInfos.value = data.data

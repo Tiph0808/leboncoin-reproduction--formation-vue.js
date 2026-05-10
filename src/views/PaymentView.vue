@@ -147,7 +147,10 @@ const handlePayment = async () => {
       const response = await axios.post('http://localhost:1337/api/offers/buy', {
         token: stripeToken,
         amount: totalPrice.value, // RMQ : le prix tota doit tenir compte du choix de livraison! on prend donc le totalPrice calculé plus haut. Attention! : il faut mettre .value aussi pour un computed
-        title: offerInfos.value.attributes.title
+        title: offerInfos.value.attributes.title,
+        // Je rajoute comme infos l'id de l'offre pour pouvoir la supprimer apres paiment coté back
+        id: props.id
+
       }, { headers: { Authorization: `Bearer ${GlobalStore.userInfos.value.token}` } }) // MA route est reservée aux utilisateurs authentifiés dans strapi je dois donc rajouter un header avec le token stocke a la connexion de l'utilisateur
       console.log('data-payment : ', response)
 
@@ -155,6 +158,16 @@ const handlePayment = async () => {
       if (response.data.status === "succeeded") {
 
         alert(`paiement de ${totalPrice.value} validé pour l'achat du produit ${offerInfos.value.attributes.title} par ${firstname.value} ${lastname.value}`,
+
+
+          // Je veux que l'article acheté soit supprimé de ma liste d'offres :
+          // Pour cela j'utilise l'id ((l'id de mon offre nous est envoyée en props dans ce composant)) de mon offre et je fais une requete au backend :
+          // console.log(props.id)
+          // await axios.delete(`http://localhost:1337/api/offers/${props.id}`, { headers: { Authorization: `Bearer ${GlobalStore.userInfos.value.token}` } }),
+          // ATTENTION : ceci ne marche pas car nous avons précedemment crée une policy is-authorized dans le projet strapi, qui consiste a verifier le la personne qui fait une requete est bien le proprietaire de l'offre. Cette policy est appliquee aux routes update, delete et create ( d'apres le fichier src>api>offer>routes>offer.js ). Cette policy sur la route delete empeche de supprimer une annonce si on en est pas le proprietaire. Ce qui sera TOUJOURS le cas dans le cas d'un achat!! LOGIQUE! donc on laisse cette policy telle qu'elle est et on va donc gerer la suppression de l'annonce juste apres la validation de l'achat coté backend :) ---> comment? en etendant le comportement du controller de la route buy (fichier src>ap>offer>>controller>offer.js)
+
+
+
           router.push({ name: 'home' })
           //router.replace({name:'home'}) // elle utilise la methode replace au lieu de push qui permet au moment de la naviguation de faire un remplacement dans l'historique ( au lieu de payment, la derniere page visitée, on aura la page de l'offre, l'avant derniere).
           // avec replace, lapage qu'on quitte n'est plus accessible en cliquant sur le bouton retour dans le navigateur

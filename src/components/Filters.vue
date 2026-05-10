@@ -2,7 +2,7 @@
 <!-- eslint-disable vue/no-dupe-keys -->
 <!-- eslint-disable vue/multi-word-component-names -->
 <script setup>
-import { ref } from 'vue'
+import { ref, watchEffect } from 'vue'
 import { useRouter } from 'vue-router'
 
 // FILTERS ---- Correction :
@@ -18,6 +18,16 @@ console.log(props) // affiche dans la console un objet avec les clés pricemin, 
 const priceMin = ref(props.pricemin)
 const priceMax = ref(props.pricemax)
 const sort = ref(props.sort)
+
+// RMQ : pourquoi l'Ajout du watcheffect
+// Quand l'URL change, les PROPS changent. Par exemple, au click sur le logo je reinitialise mon URL donc les props changent. Ce watcheffect permet de "surveiller" ça. si les props changent, wathceffect met a jour les refs locales qui dependent de la valeurs des props.
+// De ce fait les inputs afficheront tjs les bonnes valeurs ( et se viderobnt si on click sur le logo leboncoin)
+watchEffect(() => {
+  priceMin.value = props.pricemin
+  priceMax.value = props.pricemax
+  sort.value = props.sort
+})
+
 
 const router = useRouter()
 
@@ -77,26 +87,12 @@ const handleSubmit = () => {
       <p>Prix</p>
       <div class="priceBloc">
         <div>
-          <input
-            type="number"
-            name="priceMin"
-            id="priceMin"
-            placeholder="Minimum"
-            min="0"
-            v-model="priceMin"
-          />
+          <input type="number" name="priceMin" id="priceMin" placeholder="Minimum" min="0" v-model="priceMin" />
           <!-- RMQ : On rajoutte l'attribut min pour ne pas autoriser que la valeur soit en dessous de zero -->
           <label for="PriceMin">€</label>
         </div>
         <div>
-          <input
-            type="number"
-            name="priceMax"
-            id="priceMax"
-            placeholder="Maximum"
-            :min="priceMin"
-            v-model="priceMax"
-          />
+          <input type="number" name="priceMax" id="priceMax" placeholder="Maximum" :min="priceMin" v-model="priceMax" />
           <!-- RMQ : On rajoutte l'attribut min , avec la directive v-bind, pour que cette valeur ne soit jamais inf a celle de priceMin entrée précedemment -->
           <label for="PriceMax">€</label>
         </div>
@@ -115,11 +111,9 @@ const handleSubmit = () => {
       <p>Tri</p>
       <div>
         <!-- Pour trier par prix croissants/décroissants, je dois rajouter cette syntaxe en query a mon url : sort[0]=price:asc ou desc , donc je donne price:asc ou price:desc comme value a mes inputs radio : cette valeur sera celle de la a ref sort (et si pas de valeur pas de tri)-->
-        <label
-          >Prix croissant <input type="radio" value="price:asc" id="priceAsc" v-model="sort" />
+        <label>Prix croissant <input type="radio" value="price:asc" id="priceAsc" v-model="sort" />
         </label>
-        <label
-          >Prix décroissant <input type="radio" value="price:desc" id="priceDesc" v-model="sort" />
+        <label>Prix décroissant <input type="radio" value="price:desc" id="priceDesc" v-model="sort" />
         </label>
         <label>Pas de tri <input type="radio" value="" id="noSort" v-model="sort" /> </label>
         <!-- RMQ :avec Vue.js, plus besoin de l'attribut name quand on a v-model-->
