@@ -39,7 +39,7 @@ const handleSubmit = async () => {
   if (username.value && email.value && password.value) {
     try {
       // je fais ma reqeute en interrogeant l'url indiquée et en envoyant mes infos en 2eme argument sous forme d'objet avec les clés necessaires pour créer mon utilisateur
-      const { data } = await axios.post('http://localhost:1337/api/auth/local/register', {
+      const { data } = await axios.post('${import.meta.env.VITE_API_URL}/api/auth/local/register', {
         username: username.value,
         email: email.value,
         password: password.value

@@ -64,7 +64,7 @@ onBeforeMount(async () => { // Hook qui se declenche avant le montage du composa
 // Au montage du composant je recupere les infos de mon offre
 onMounted(async () => {
   try {
-    const { data } = await axios.get(`http://localhost:1337/api/offers/${props.id}?populate[0]=picture`)
+    const { data } = await axios.get(`${import.meta.env.VITE_API_URL}/api/offers/${props.id}?populate[0]=picture`)
     // pour les infos
     console.log('offerInfos', data.data)
     // pour avoir l'url (uniquement de la premiere image car ic on ne veut afficher que celle ci, pas de carroussel!)
@@ -144,7 +144,7 @@ const handlePayment = async () => {
       // je stocke mon token pour l'envoyer dans ma requete
       const stripeToken = token.id
       // Je fais ma requete en envoyant les infos de la transaction (ici 3 infos : le title de l'offre, son prix (amount) et le token )
-      const response = await axios.post('http://localhost:1337/api/offers/buy', {
+      const response = await axios.post('${import.meta.env.VITE_API_URL}/api/offers/buy', {
         token: stripeToken,
         amount: totalPrice.value, // RMQ : le prix tota doit tenir compte du choix de livraison! on prend donc le totalPrice calculé plus haut. Attention! : il faut mettre .value aussi pour un computed
         title: offerInfos.value.attributes.title,
@@ -163,7 +163,7 @@ const handlePayment = async () => {
           // Je veux que l'article acheté soit supprimé de ma liste d'offres :
           // Pour cela j'utilise l'id ((l'id de mon offre nous est envoyée en props dans ce composant)) de mon offre et je fais une requete au backend :
           // console.log(props.id)
-          // await axios.delete(`http://localhost:1337/api/offers/${props.id}`, { headers: { Authorization: `Bearer ${GlobalStore.userInfos.value.token}` } }),
+          // await axios.delete(`${import.meta.env.VITE_API_URL}/api/offers/${props.id}`, { headers: { Authorization: `Bearer ${GlobalStore.userInfos.value.token}` } }),
           // ATTENTION : ceci ne marche pas car nous avons précedemment crée une policy is-authorized dans le projet strapi, qui consiste a verifier le la personne qui fait une requete est bien le proprietaire de l'offre. Cette policy est appliquee aux routes update, delete et create ( d'apres le fichier src>api>offer>routes>offer.js ). Cette policy sur la route delete empeche de supprimer une annonce si on en est pas le proprietaire. Ce qui sera TOUJOURS le cas dans le cas d'un achat!! LOGIQUE! donc on laisse cette policy telle qu'elle est et on va donc gerer la suppression de l'annonce juste apres la validation de l'achat coté backend :) ---> comment? en etendant le comportement du controller de la route buy (fichier src>ap>offer>>controller>offer.js)
 
 

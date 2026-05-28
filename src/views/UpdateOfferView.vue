@@ -31,7 +31,7 @@ console.log(props.id)
 // Au montage du composant je veux recuperer les infos de l'offre et pré remplir mes champs avec ( je pense a populate la clé picture sinon je naurai pas les photos dans ma reponse)
 onMounted(async () => {
   try {
-    const { data } = await axios.get(`http://localhost:1337/api/offers/${props.id}?populate[0]=picture`)
+    const { data } = await axios.get(`${import.meta.env.VITE_API_URL}/api/offers/${props.id}?populate[0]=picture`)
     console.log(data)
     title.value = data.data.attributes.title
     description.value = data.data.attributes.description
@@ -83,7 +83,7 @@ const handleSubmit = async () => {
 
     // Je fais ma requete pour UPDATE (put) mon offre en envoyant mon formData en 2eme arg (+ le bearer token en 3eme arg, car la route est reservee aux utilisateurs connectes)
     try {
-      const { data } = await axios.put(`http://localhost:1337/api/offers/${props.id}`, formData, {
+      const { data } = await axios.put(`${import.meta.env.VITE_API_URL}/api/offers/${props.id}`, formData, {
         headers: {
           Authorization: `Bearer ${GlobalStore.userInfos.value.token}`
         }

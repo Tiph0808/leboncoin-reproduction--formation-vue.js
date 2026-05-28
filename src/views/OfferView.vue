@@ -19,7 +19,7 @@ const pictures = ref([])
 onMounted(async () => {
   try {
     const { data } = await axios.get(
-      `http://localhost:1337/api/offers/${props.id}?populate[0]=picture&populate[1]=owner.avatar`,
+      `${import.meta.env.VITE_API_URL}/api/offers/${props.id}?populate[0]=picture&populate[1]=owner.avatar`,
     )
     // console.log(
     //   'Response OfferView >>> ',

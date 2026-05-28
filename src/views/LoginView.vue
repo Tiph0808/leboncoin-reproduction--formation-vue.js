@@ -35,7 +35,7 @@ const handleSubmit = async () => {
   isSubmitting.value = true
   if (email.value && password.value) {
     try {
-      const { data } = await axios.post('http://localhost:1337/api/auth/local', {
+      const { data } = await axios.post('${import.meta.env.VITE_API_URL}/api/auth/local', {
         identifier: email.value,
         password: password.value
       })

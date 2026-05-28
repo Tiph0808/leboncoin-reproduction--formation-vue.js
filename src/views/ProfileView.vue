@@ -13,7 +13,7 @@ const offers = ref([])
 
 onMounted(async () => {
   try {
-    const { data } = await axios.get(`http://localhost:1337/api/users/${GlobalStore.userInfos.value.id}?populate[0]=offers&populate[1]=avatar`, {
+    const { data } = await axios.get(`${import.meta.env.VITE_API_URL}/api/users/${GlobalStore.userInfos.value.id}?populate[0]=offers&populate[1]=avatar`, {
       headers: {
         Authorization: `Bearer ${GlobalStore.userInfos.value.token}`
       }

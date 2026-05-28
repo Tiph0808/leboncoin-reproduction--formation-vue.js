@@ -41,7 +41,7 @@ onMounted(() => {
       console.log('page envoyée:', props.page)
       const { data } = await axios.get(
         // on a populate d'autres clés de l'objet offer qui n'apparaissaient pas par defaut afin d'acceder à toutes les infos (voir complement d'informations/querys => grand cahier)
-        `http://localhost:1337/api/offers?populate[0]=picture&populate[1]=owner.avatar${priceFilters}&sort[0]=${props.sort}&filters[title][$containsi]=${props.title}&pagination[page]=${props.page}&pagination[pageSize]=10`,
+        `${import.meta.env.VITE_API_URL}/api/offers?populate[0]=picture&populate[1]=owner.avatar${priceFilters}&sort[0]=${props.sort}&filters[title][$containsi]=${props.title}&pagination[page]=${props.page}&pagination[pageSize]=10`,
       )
       console.log('data', data) // infos sur les pages a la clé meta
       // console.log(data.data)
