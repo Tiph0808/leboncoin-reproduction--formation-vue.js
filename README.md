@@ -1,44 +1,40 @@
-# leboncoin-reproduction
+# **LeBonCoin reproduction**
 
-This template should help get you started developing with Vue 3 in Vite.
+A full-stack market place application inspired by LeBonCoin, built as part of my web development training at Le Reacteur
 
-## Recommended IDE Setup
+## **Tech Stack**
+- **Frontend** : Vue.js, Vue Router, Axios
+- **Backend** : Strapi
+- **Payment** : Stripe
+- **Image hosting** : Cloudinary
 
-[VS Code](https://code.visualstudio.com/) + [Vue (Official)](https://marketplace.visualstudio.com/items?itemName=Vue.volar) (and disable Vetur).
+## **Features**
+- User authentication (sign up/login)
+- Create, publish and manage listings with photos
+- Secure payment via Stripe
+- Browse and filter listings
+- protected routes (naviguation guards)
 
-## Recommended Browser Setup
+## **Personal extensions**
+- Offer automatically removed from listing after purchase ✅
+- Profile page with listing management ✅
+- Edit and delete own listings ✅
 
-- Chromium-based browsers (Chrome, Edge, Brave, etc.):
-  - [Vue.js devtools](https://chromewebstore.google.com/detail/vuejs-devtools/nhdogjmejiglipccpnnnanhbledajbpd)
-  - [Turn on Custom Object Formatter in Chrome DevTools](http://bit.ly/object-formatters)
-- Firefox:
-  - [Vue.js devtools](https://addons.mozilla.org/en-US/firefox/addon/vue-js-devtools/)
-  - [Turn on Custom Object Formatter in Firefox DevTools](https://fxdx.dev/firefox-devtools-custom-object-formatters/)
+## **Work in progress**
+- UI/UX improvements
 
-## Customize configuration
+## Run locally
+Frontend :
 
-See [Vite Configuration Reference](https://vite.dev/config/).
+`npm install`
 
-## Project Setup
+`npm run dev`
 
-```sh
-npm install
-```
+Backend :
 
-### Compile and Hot-Reload for Development
+`npm install`
 
-```sh
-npm run dev
-```
+`npm run develop`
 
-### Compile and Minify for Production
-
-```sh
-npm run build
-```
-
-### Lint with [ESLint](https://eslint.org/)
-
-```sh
-npm run lint
-```
+## **Related**
+Backend repository : le-bon-coin-backend
