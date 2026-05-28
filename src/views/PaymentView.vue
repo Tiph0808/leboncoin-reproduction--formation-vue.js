@@ -144,7 +144,7 @@ const handlePayment = async () => {
       // je stocke mon token pour l'envoyer dans ma requete
       const stripeToken = token.id
       // Je fais ma requete en envoyant les infos de la transaction (ici 3 infos : le title de l'offre, son prix (amount) et le token )
-      const response = await axios.post('${import.meta.env.VITE_API_URL}/api/offers/buy', {
+      const response = await axios.post(`${import.meta.env.VITE_API_URL}/api/offers/buy`, {
         token: stripeToken,
         amount: totalPrice.value, // RMQ : le prix tota doit tenir compte du choix de livraison! on prend donc le totalPrice calculé plus haut. Attention! : il faut mettre .value aussi pour un computed
         title: offerInfos.value.attributes.title,

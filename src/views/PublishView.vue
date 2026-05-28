@@ -49,7 +49,7 @@ const handleSubmit = async () => {
     formData.append('data', stringifiedObj)
 
     try {
-      const { data } = await axios.post('${import.meta.env.VITE_API_URL}/api/offers', formData, {
+      const { data } = await axios.post(`${import.meta.env.VITE_API_URL}/api/offers`, formData, {
         headers: {
           // d'après la consigne, Bearer token obligatoire donc j'ajoute la clé authorization dans mes headers
           Authorization: `Bearer ${GlobalStore.userInfos.value.token}`
