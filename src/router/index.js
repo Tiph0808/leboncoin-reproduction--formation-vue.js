@@ -16,20 +16,31 @@ const router = createRouter({
       // on configure cette route pour lui indiquer qu'elle peut recevoir des querys en props
       // Pour ça on ajoute la clé props et on lui donne comme valeur une fonction qui nous donne accès à route et à ses differentes queries (route.queries) (= à l'objet route et ses differentes clés/infos)
       props: (route) => {
-        // console.log(route)
+        // console.log(route) // montre toutes les infos de ma route
+
+        // index.js est le chef d'orchestre des URLS
+        // Son role ici : lire les querys params de l'URL et les transformer en props pour les envoyer a HomeView
+        // Circuit complet : ( + Voir schema grand cahier!)
+        // 1- l'utilisateur remplit le formulaire dans filters (fichier filters)
+        // 2- grace a router.push({query:queries}), filters réecrit l'url (fichier filters)
+        // 3- index.js voit l'url changer et transforme les queries en props pour le transmettre a homeView. (dans ce fichier)
+        // 4- homeView reçoit les pros et refait la requête Axios --> les nouvelles offres s'affichent (fichier homeView)
+        // 5- homeview retransmet ces props a filters pour que les inputs restent pré-remplis au chargement ( et on retourne au point 1 ;) ) (fichier homeView)
+        // (voir etapes dans les fichiers homeview et filters)
+        // ce circuit se repète a chaque clic sur rechercher, des que l'url change, tout repart de index.js
         return {
           // FILTERS --- Correction :
-          // Je dis à ma route quelles querys elle peut recevoir en props  :
-          // (= on defini les props qui seront transmises a notre route)
-          // Je veux retourner un objet avec differentes clés, contenant les differentes queries possibles
-          // Ces clés auront pour valeur les queries de la route si elle existent sinon une cdc vide (qui ajouter une query vide a l'url)
-          page: parseInt(route.query.page) || 1, // parseInt() poiur transformer la query qui est une string en nombre entier strict)
+          // Dans ce fichier, Je dis à ma route quelles querys elle peut recevoir en props (= on defini les props qui seront transmises a notre route) :
+          // Pour cela Je RETOURNE UN OBJET dont les differentes clés deviendront les props de homeView
+          // et dont les valeurs sont lues depuis l'URL
+          // Ces clés auront pour valeur les queries de la route si elle existent (cad si les inputs de filters ont ete remplies) sinon une cdc vide (qui va ajouter une query vide a l'url ce qui n'aura aucune consequeneces lors de sa lecture)
+          page: parseInt(route.query.page) || 1, // parseInt() pour transformer la query qui est une string en nombre entier strict)
           title: route.query.title || '',
           sort: route.query.sort || '',
           pricemin: Number(route.query.pricemin) || '', // IMPORTANT : le typeof query sera tjs string donc ici on veut un number !
           pricemax: Number(route.query.pricemax) || '',
         }
-        // ON DOIT AUSSI DEFINIR CES PROPS dans le composant retourné par cette route (HomeView)
+        // ATTENTION : ON DOIT AUSSI DEFINIR CES PROPS dans le composant retourné par cette route (HomeView) sinon vue ne sait pas qu'il doit les recevoir
       },
     },
     {
@@ -75,6 +86,19 @@ const router = createRouter({
       // (.*) : expression regulière qui signifie qu'on "récupere" tout
       name: 'notFound',
       component: NotFoundView,
+    },
+    {
+      path: '/profile',
+      name: 'profile',
+      component: () => import('../views/ProfileView.vue'),
+      meta: { requireAuth: true },
+    },
+    {
+      path: '/updateOffer/:id',
+      name: 'updateOffer',
+      component: () => import('../views/UpdateOfferView.vue'),
+      props: true,
+      meta: { requireAuth: true },
     },
   ],
 })

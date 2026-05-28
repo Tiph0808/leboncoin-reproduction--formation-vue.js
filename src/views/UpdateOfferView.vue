@@ -1,5 +1,5 @@
 <script setup>
-import { ref, computed, inject } from 'vue';
+import { ref, computed, inject, onMounted } from 'vue';
 import axios from 'axios';
 import { useRouter } from 'vue-router';
 
@@ -8,33 +8,66 @@ const router = useRouter()
 const title = ref('')
 const description = ref('')
 const price = ref(null)
+// je cree une ref pour les nouvelles photos selectionnees
+const newPictures = ref([])
 const isLoading = ref(false)
 
-const pictures = ref([])
+// Je crée une ref  pour les photos existantes
+const existingPictures = ref([])
 
 const errorMessage = ref('')
 
 const GlobalStore = inject('GlobalStore')
 
+// je recupere l'id de loffre envoye en params grace aux props
+const props = defineProps({
+  id: {
+    type: String,
+    required: true,
+  },
+})
+console.log(props.id)
+
+// Au montage du composant je veux recuperer les infos de l'offre et pré remplir mes champs avec ( je pense a populate la clé picture sinon je naurai pas les photos dans ma reponse)
+onMounted(async () => {
+  try {
+    const { data } = await axios.get(`http://localhost:1337/api/offers/${props.id}?populate[0]=picture`)
+    console.log(data)
+    title.value = data.data.attributes.title
+    description.value = data.data.attributes.description
+    price.value = data.data.attributes.price
+    existingPictures.value = data.data.attributes.picture.data.map((picture) => (picture.attributes.url))
+
+    console.log(existingPictures.value)
+  } catch (error) {
+    console.log('catch update : ', error.message)
+  }
+})
+
+
+
+// Lorsque j'ai terminé mes modifs je clic sur mon bouton et je declenche la fonction qui va permettre d'update mon offre
 const handleSubmit = async () => {
 
-  if (title.value && description.value && price.value && pictures.value.length > 0) {
+  // On verifie comme pour une creation d'offre que les champs obligatoires sont bien remplis
+  // RMQ : les photos ne sont pas verifiées ici car elles sont gérées coté Strapi ( voir fichier src/api/offer/controllers/offer.js)
+  if (title.value && description.value && price.value) {
 
     isLoading.value = true
 
-    // je recupere l'id de l'owner pour l'envoyer dans mon stingifiedObj qui contient toutes les infos des champs (sauf les images)
+    // je recupere l'id de l'owner pour l'envoyer dans mon stingifiedObj qui contiendra toutes les infos des champs (sauf les images)
     const owner = GlobalStore.userInfos.value.id
 
+    // Je cree un formData qui va contenir les infos a envoyer
     const formData = new FormData()
 
-    // je rajoute les images une par une a mon formData
-    for (const picture of pictures.value) {
+    //  J'ajoute mes images une par une a ce formData
+    for (const picture of newPictures.value) {
       formData.append('files.picture', picture)
     }
 
     // Un formdata ne peut transporter que les strings ou des fichiers, pas d'objet!
     // Donc, les infos a envoyer je les stocke dans un obj que je dois STRINGIFIER  pour qu'elles soient ajoutées forData
-
     const stringifiedObj = JSON.stringify({
       title: title.value,
       description: description.value,
@@ -45,13 +78,13 @@ const handleSubmit = async () => {
     console.log('stringifiedObj :', stringifiedObj)
     console.log('owner :', owner)
 
-    /// je rajoute mon  objet avec les autres infos a mon formData
+    // J'ajoute mes infos
     formData.append('data', stringifiedObj)
 
+    // Je fais ma requete pour UPDATE (put) mon offre en envoyant mon formData en 2eme arg (+ le bearer token en 3eme arg, car la route est reservee aux utilisateurs connectes)
     try {
-      const { data } = await axios.post('http://localhost:1337/api/offers', formData, {
+      const { data } = await axios.put(`http://localhost:1337/api/offers/${props.id}`, formData, {
         headers: {
-          // d'après la consigne, Bearer token obligatoire donc j'ajoute la clé authorization dans mes headers
           Authorization: `Bearer ${GlobalStore.userInfos.value.token}`
         }
       })
@@ -75,7 +108,7 @@ const handleSubmit = async () => {
 // Je crée une url pour chaque image (interpretable pour une balise img) a partir des infos grâce a la pp computed :
 const imagesPreview = computed(() => {
   // je cree un tableau d'URLS grace a map qui parcourt mon tableau
-  return pictures.value.map((picture) => URL.createObjectURL(picture))
+  return newPictures.value.map((picture) => URL.createObjectURL(picture))
 })
 console.log(imagesPreview)
 
@@ -86,7 +119,7 @@ const selectPictures = (event) => {
   const numOfFiles = event.target.files.length
   //console.log(numOfFiles) // nombre de fichiers/d'éléments dans l'objet event.target.files ( objet que jai préféré transformer en tableau directement lorsque je l'attribue comme valeur a ma ref pictures, car je vais devoir boucler dessus et je prefere boucler sur un tableau que sur un objet :) )
   if (numOfFiles <= 10) { // consigne : 10 photos MAX
-    pictures.value = Array.from(event.target.files)
+    newPictures.value = Array.from(event.target.files)
   } else {
     errorMessage.value = '10 photos maximum'
   }
@@ -101,7 +134,7 @@ const selectPictures = (event) => {
   <main>
     <div class="container">
 
-      <h1>Déposer une annonce</h1>
+      <h1>Modifier mon annonce</h1>
       <form @submit.prevent="handleSubmit">
         <label for="title">Titre de l'annonce </label>
         <input type="text" name="title" id="title" v-model="title" @input="errorMessage = ''">
@@ -122,21 +155,28 @@ const selectPictures = (event) => {
           <p>€</p>
         </div>
 
-        <label> Ajouter des photos</label>
+
+        <div class="existingPictures">
+          <img v-for="(url, index) in existingPictures" :key="index" :src=url alt="">
+        </div>
+
+
+
+        <label> Modifier mes photos </label>
         <label for="pictures" class="fileInput">
           <font-awesome-icon :icon="['fas', 'camera']" />
           <span>Selectionnez jusqu'à 10 photos</span>
         </label>
         <input type="file" id="pictures" name="pictures" multiple @input="selectPictures">
 
-        <div v-if="pictures" class="previews">
+        <div v-if="newPictures" class="previews">
           <img v-for="(preview, index) in imagesPreview" :key="index" :src="preview">
         </div>
 
 
 
         <p v-if="isLoading">Enregistrement en cours...</p>
-        <button v-else>Déposer mon annonce</button>
+        <button v-else>Modifier mon annonce</button>
 
         <p v-if="errorMessage" class="errorMessage">{{ errorMessage }}</p>
 
@@ -230,14 +270,21 @@ input::-webkit-inner-spin-button {
   margin: 0;
 }
 
+/* photos pré-existantes */
+.existingPictures {
+  display: flex;
+}
 
-/* Pour obtenir le resultat demandé, je dois faire disparaitre moon input et styliser son label (comme le label est relié a son input grâce à son id, quand je clique sur le label, c'est comme si je cliquais sur  mon input*/
+
+
+/* Pour l'ajout de photos : Pour obtenir le resultat demandé, je dois faire disparaitre moon input et styliser son label (comme le label est relié a son input grâce à son id, quand je clique sur le label, c'est comme si je cliquais sur  mon input*/
 input[type='file'] {
   display: none;
 }
 
 /* je stylise le label */
 .fileInput {
+
   margin-top: 0;
   border: 1px solid var(--grey);
   height: 150px;
@@ -282,6 +329,7 @@ img {
   /*Je veux des carrés, je peux utiliser la pp aspect ratio  et lui donner la valeur : 1/1 */
   aspect-ratio: 1/1;
   border-radius: 5px;
+  object-fit: cover;
 }
 
 .errorMessage {

@@ -13,15 +13,15 @@ console.log(props) // affiche dans la console un objet avec les clés pricemin, 
 
 // Création des refs
 // Ces infos sont les valeurs que l'on voudra mettre dans les QUERIES de notre URL
-// Ces queries ont va les recupérer en props
-// je leur donne comme valeur initiale la valeur des props que j'ai recupérer
+// je leur donne comme valeur initiale la valeur des props que j'ai recupérer de homeview (ligne 11-12)
 const priceMin = ref(props.pricemin)
 const priceMax = ref(props.pricemax)
 const sort = ref(props.sort)
 
 // RMQ : pourquoi l'Ajout du watcheffect
-// Quand l'URL change, les PROPS changent. Par exemple, au click sur le logo je reinitialise mon URL donc les props changent. Ce watcheffect permet de "surveiller" ça. si les props changent, wathceffect met a jour les refs locales qui dependent de la valeurs des props.
-// De ce fait les inputs afficheront tjs les bonnes valeurs ( et se viderobnt si on click sur le logo leboncoin)
+// Quand l'URL change, les PROPS changent. Par exemple, au click sur le logo je reinitialise mon URL en lui transmettant un objet query vide (voir header)
+// Ce watcheffect permet de "surveiller" ça. si les props changent, wathceffect met a jour les refs locales qui dependent de la valeurs des props.
+// De ce fait les inputs afficheront tjs les bonnes valeurs ( et se videront si on click sur le logo leboncoin, puisqu au clic sur celui ci je transmet a ma route un objet query vide , voir header router.push ligne 23 )
 watchEffect(() => {
   priceMin.value = props.pricemin
   priceMax.value = props.pricemax
@@ -38,6 +38,7 @@ const handleSubmit = () => {
   // si jai rempli qq chose dans les input je veux ajouter la clé pricemin à mes queries (ou la modifier, dans les 2 cas c'est la meme ligne de code (query.cléàAjouter/Modifier = valeur de l'input)
   // si le champ est vide alors je veux effacer cette query de mon url
   // donc je dois effacer la clé correspondante dans le nouvel'objet queries que jai crée
+  // (Même logique pour les autres inputs)
   if (priceMin.value) {
     queries.pricemin = priceMin.value
   } else {
@@ -57,10 +58,13 @@ const handleSubmit = () => {
   // de cette facon si on change certains filtres de notre recherche on obtiendra tjs la premiere page des resultats
   queries.page = 1
 
+  // une fois que jai modifié la copie de mes queries je veux naviguer vers ma page grace  a router.push
   router.push({ name: 'home', query: queries }) // je veuxx acceder a la route 'home' en lui transmettant une clé query: avec toutes les modifications faites dans ce composant filters
+  //  2- grace a router.push({query:queries}), filters réecrit l'url : il integre les valeurs entrées dans le form en query dans l'url
 }
 
-// // My way :
+
+// // My way : with emits
 
 // // Je defini mon evenement: a la soumission du form les infos sont envoyées au composant parent
 // const emit = defineEmits({
@@ -81,8 +85,9 @@ const handleSubmit = () => {
 </script>
 
 <template>
-  <!-- <form @submit.prevent="sendFilters"> -->
+  <!--(My way:) <form @submit.prevent="sendFilters"> -->
   <form @submit.prevent="handleSubmit">
+    <!-- 1- l'utilisateur remplit le formulaire dans filters -->
     <div>
       <p>Prix</p>
       <div class="priceBloc">
@@ -97,14 +102,6 @@ const handleSubmit = () => {
           <label for="PriceMax">€</label>
         </div>
       </div>
-
-      <!--My Way : <div>
-        <label for="asc">Prix croissants<input type="radio" id="asc" name="priceSort" value="asc"
-            v-model="sortOrder"></label>
-        <label for="desc">Prix décroissants<input type="radio" id="desc" name="priceSort" value="desc"
-            v-model="sortOrder"></label>
-        <label for="none">Pas de tri<input type="radio" id="none" name="priceSort" value="" v-model="sortOrder"></label>
-      </div> -->
     </div>
 
     <div class="sortBloc">
@@ -118,6 +115,15 @@ const handleSubmit = () => {
         <label>Pas de tri <input type="radio" value="" id="noSort" v-model="sort" /> </label>
         <!-- RMQ :avec Vue.js, plus besoin de l'attribut name quand on a v-model-->
       </div>
+
+      <!--My Way : <div>
+        <label for="asc">Prix croissants<input type="radio" id="asc" name="priceSort" value="asc"
+            v-model="sortOrder"></label>
+        <label for="desc">Prix décroissants<input type="radio" id="desc" name="priceSort" value="desc"
+            v-model="sortOrder"></label>
+        <label for="none">Pas de tri<input type="radio" id="none" name="priceSort" value="" v-model="sortOrder"></label>
+      </div> -->
+
     </div>
 
     <button>Rechercher</button>

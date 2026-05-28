@@ -13,10 +13,11 @@ import Filters from '@/components/Filters.vue'
 import Pagination from '@/components/Pagination.vue'
 
 // FILTERS --- CORRECTION  :
-// Je récupère les props (avant de les transmettre au composant concerné, ici FILTERS)
-
+// Je récupère les props qui viennent d'index.js (avant de les transmettre au composant concerné, ici FILTERS)
+// je leur donne donc le nom que j'ai choisi dans index.js
+// 4- homeView reçoit les pros et refait la requête Axios : les nouvelles offres s'affichent
 const props = defineProps(['sort', 'pricemin', 'pricemax', 'title', 'page']) // definies de facon simple : on ne precise pas le typeof, on dit juste qu'on va recevoir des props nommmées comme ca
-console.log(props) // affiche dans la console un objet avec les clés pricemin, pricemax et sort
+console.log(props) // affiche dans la console un objet avec les clés pricemin, pricemax,  sort etc..
 
 const offersList = ref([])
 // je crée une ref pour ma pagination
@@ -24,8 +25,10 @@ const offersList = ref([])
 const numOfPages = ref(1)
 
 onMounted(() => {
+  // englober ma requete dans un watch effect permet de surveiller les valeurs dynamiques a l'interieur de celle ci et  de redeclencher ma requete si ces valeurs changent :
   watchEffect(async () => {
     try {
+      // pour les filtres je dois gerer une combinaison du min et/ou du max : pour cela jai une manip a faire : je cree une variable qui va contenir mon/mes filtres que je vais concatener a l'adresse de ma requete
       let priceFilters = ''
 
       if (props.pricemax) {
@@ -44,6 +47,9 @@ onMounted(() => {
       // console.log(data.data)
       offersList.value = data.data
       // console.log(offersList.value)
+
+      // Pour mon composant pagination, jai besoin de connaitre le nombre de pages totales du resultat de ma requete (voir pagination ligne 36-39)
+      // je bouclerai sur cette donnée pour pouvoir afficher toutes les pages surlesquelles je peux cliquer
       // je transmet a num of pages la valeur de pagecount qui se trouve dans la clé méta de ma reponse
       numOfPages.value = data.meta.pagination.pageCount
     } catch (error) {
@@ -78,6 +84,8 @@ onMounted(() => {
 
       <!-- Je transmet les props à mon composant filter -->
       <!-- Ici je dois leur donner une valeur ! (d'ailleurs cette valeur definira leur typeof si on les as defini de facon simple dans le script) -->
+      <!--  5- homeview retransmet ces props a filters pour que les inputs restent pré-remplis au chargement ( et on retourne au point 1 ;) ) -->
+      <!-- Syntaxe : a gauche des : JE choisi le nom qui defini les props que Filters doit recevoir , a droite des : entre "" c'est la valeur que homeView a reçu de index.js et qu'elle retransmet à filters -->
       <Filters :sort="sort" :pricemin="pricemin" :pricemax="pricemax" :title="title" :page="page" />
       <!-- RMQ : Je n'oublie pas de transmettre les query title et page a mon composant filters aussi! pour pouvoir applique des filtres de prix tout en gardant le filtre entré dans l'input title du header si il y en a un :)-->
       <p>Des millions de petites annonces et autant d’occasions de se faire plaisir</p>

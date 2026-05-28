@@ -23,10 +23,10 @@ const disconnectUser = () => {
   router.push({ name: 'home' })
 }
 
-const search = ref('')
+const search = ref('') // je cree la ref pour mon input de recherche
 
 // Je met un watcheffect pour que l'input se vide au click sur le logo (Pour les memes raisons que dans Filters.vue : si les props changent, watcheffect mettra a jour la ref locale)
-// I dem que ligne 13, le header etant en dehors de RouterView, il ne recoit pas les props directement. Je les recupere en utilisant useRoute()
+// Idem que ligne 13, le header etant en dehors de RouterView, il ne recoit pas les props directement. Je les recupere en utilisant useRoute()
 watchEffect(() => {
   search.value = route.query.title
 })
@@ -34,7 +34,9 @@ watchEffect(() => {
 const handleSubmit = () => {
   console.log(search.value)
   console.log(route.query)
-  // header est en dehors de RouterView et donc de Homeview, donc je ne peux pas recupérer les props reçues pas la route ( je ne peux pas les passer depuis homeview)
+  // header est en dehors de RouterView et donc de Homeview, donc je ne peux pas recupérer les props reçues pas la route ( je ne peux pas les passer depuis homeview), a la place jutilise useRoute pour acceder a mes queries
+
+  // Je veux que mon titre soit rajouté dans les querys
   // Donc ici je vais utiliser useRoute pour  acceder aux queries et en faire une copie
   const queries = { ...route.query }
 
@@ -108,7 +110,13 @@ const handleSubmit = () => {
         <font-awesome-icon :icon="['fas', 'circle']" />
         <span>Loisirs</span>
         <font-awesome-icon :icon="['fas', 'circle']" />
-        <span>Autres</span>
+
+        <RouterLink :to="{ name: 'profile' }" v-if="GlobalStore.userInfos.value">
+          <span>Profile</span>
+        </RouterLink>
+
+        <span v-else>Autres</span>
+
       </div>
     </div>
   </header>
@@ -174,6 +182,7 @@ img {
 
 .middlePart > div > form button {
   border: none;
+  /* cursor: pointer; */
 }
 
 input {
