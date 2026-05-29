@@ -15,8 +15,8 @@ const GlobalStore = inject('GlobalStore')
 
 // VALEURS REACTIVES
 
-const email = ref('claude@mail.com')
-const password = ref('password')
+const email = ref('')
+const password = ref('')
 
 // je cree mes ref pour l'affichage conditionnel:
 const errorMessage = ref('')
