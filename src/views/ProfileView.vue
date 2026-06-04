@@ -76,7 +76,7 @@ const deleteOffer = async (id) => {
       </div>
       <div v-if="offers.length > 0">
         <h1>Mes annonces</h1>
-        <div v-for="offer in profileInfos?.offers" :key="offer.id" class="offers">
+        <div v-for="offer in offers" :key="offer.id" class="offers">
           <RouterLink :to="{ name: 'offer', params: { id: offer.id } }">
             <div>
               <img :src=offer.picture[0].url alt="">
