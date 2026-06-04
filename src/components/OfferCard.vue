@@ -1,6 +1,11 @@
 <script setup>
 import { computed } from 'vue'
 import { RouterLink } from 'vue-router'
+
+// import defaultAvatar from '../assets/leboncoin1-assets/user.jpg'
+
+
+
 const props = defineProps({
   offerInfos: Object,
 })
@@ -86,7 +91,7 @@ const formatedPrice = computed(() => {
       <div class="ownerPart">
         <img class="avatar" v-if="offerInfos.attributes.owner.data.attributes.avatar.data"
           :src="offerInfos.attributes.owner.data.attributes.avatar.data.attributes.url" alt="" />
-        <img class="avatar" v-else src="../assets/leboncoin1-assets/user2.png" alt="">
+        <img class="avatar" v-else src="../assets/leboncoin1-assets/user.jpg" alt="">
         <p v-if="offerInfos.attributes.owner.data.attributes.username">{{
           offerInfos.attributes.owner.data.attributes.username }}</p>
       </div>

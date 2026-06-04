@@ -97,7 +97,7 @@ const cycleList = computed(() => {
           <div>
             <img v-if="offerInfos.attributes.owner.data.attributes.avatar.data"
               :src="offerInfos.attributes.owner.data.attributes.avatar.data.attributes.url" alt="" />
-            <img v-else src="../assets/leboncoin1-assets/user2.png" alt="">
+            <img v-else src="../assets/leboncoin1-assets/user.jpg" alt="">
 
             <p>{{ offerInfos.attributes.owner.data.attributes.username }}</p>
           </div>

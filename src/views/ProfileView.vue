@@ -1,6 +1,7 @@
 <script setup>
 import { onMounted, ref, inject } from 'vue';
 import axios from 'axios';
+import BtnPublishOffer from '@/components/BtnPublishOffer.vue';
 
 
 const GlobalStore = inject('GlobalStore')
@@ -40,6 +41,9 @@ const deleteOffer = async (id) => {
       }
     })
     console.log('offre effacée : ', data)
+    // on filtre le tableau offers pour retirer l'offre supprimée et mettre a jour l'affichage sans recharger la page
+    offers.value = offers.value.filter((offer) => offer.id !== id) // Je recrée un nouveau tableau pour l'assigner a ma ref offer
+    // methode .filter() =" Parcourt chaque offer du tableau et garde la seulement si son id est different de l'id supprimé"
   } catch (error) {
     console.log('catch error :', error.message)
   }
@@ -56,7 +60,7 @@ const deleteOffer = async (id) => {
       <div>
         <h1>Mes infos</h1>
         <div class="profile">
-          <img v-if="profileInfos.avatar" :src=profileInfos.avatar.url alt="">
+          <img v-if="profileInfos?.avatar" :src=profileInfos.avatar.url alt="">
           <img v-else src="../assets/leboncoin1-assets/user.jpg" alt="">
           <div>
             <div>
@@ -70,7 +74,7 @@ const deleteOffer = async (id) => {
 
         </div>
       </div>
-      <div>
+      <div v-if="offers.length > 0">
         <h1>Mes annonces</h1>
         <div v-for="offer in profileInfos?.offers" :key="offer.id" class="offers">
           <RouterLink :to="{ name: 'offer', params: { id: offer.id } }">
@@ -96,7 +100,10 @@ const deleteOffer = async (id) => {
           </div>
         </div>
       </div>
-
+      <div v-else class="noAdd">
+        <p>Aucune annonce enregistrée</p>
+        <BtnPublishOffer />
+      </div>
 
     </div>
   </main>
@@ -232,5 +239,19 @@ h1 {
 .tooltip:hover::after {
   opacity: 1;
   white-space: nowrap;
+}
+
+
+
+.noAdd {
+  display: flex;
+  flex-direction: column;
+  align-items: flex-start;
+
+}
+
+.noAdd p {
+  font-size: 20px;
+  margin-bottom: 30px;
 }
 </style>
