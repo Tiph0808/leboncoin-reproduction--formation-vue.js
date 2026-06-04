@@ -86,7 +86,7 @@ const formatedPrice = computed(() => {
       <div class="ownerPart">
         <img class="avatar" v-if="offerInfos.attributes.owner.data.attributes.avatar.data"
           :src="offerInfos.attributes.owner.data.attributes.avatar.data.attributes.url" alt="" />
-        <img v-else src="../assets/leboncoin1-assets/user2.png" alt="">
+        <img class="avatar" v-else src="../assets/leboncoin1-assets/user2.png" alt="">
         <p v-if="offerInfos.attributes.owner.data.attributes.username">{{
           offerInfos.attributes.owner.data.attributes.username }}</p>
       </div>
