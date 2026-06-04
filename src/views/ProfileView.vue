@@ -56,7 +56,8 @@ const deleteOffer = async (id) => {
       <div>
         <h1>Mes infos</h1>
         <div class="profile">
-          <img :src=profileInfos?.avatar?.url alt="">
+          <img v-if="profileInfos.avatar" :src=profileInfos.avatar.url alt="">
+          <img v-else src="../assets/leboncoin1-assets/user.jpg" alt="">
           <div>
             <div>
               <p><span>Nom : </span> {{ profileInfos?.username }}</p>
