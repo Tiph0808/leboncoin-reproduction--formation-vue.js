@@ -31,6 +31,7 @@ import {
   faClock,
   faEye,
   faEyeSlash,
+  faTrashCan,
 } from '@fortawesome/free-regular-svg-icons'
 
 library.add(
@@ -53,6 +54,7 @@ library.add(
   faAngleRight,
   faCamera,
   faCheck,
+  faTrashCan,
 )
 
 const app = createApp(App)

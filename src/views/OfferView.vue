@@ -77,6 +77,7 @@ const cycleList = computed(() => {
           attention : si il ny a aucune photo, que le tab n'existe pas le .length va faire crasher, donc on rajoute une securite en iserant un ? juste apres le l'endroit ou est censé se trouve le tabealu de photos : ici pictures?.length = evite le crash  ar stop la lecture du code si la la valeur recherchée n'existe pas-->
           <img v-if="cycleList.state" :src="cycleList.state.value.attributes.url" alt="" />
           <!-- la valeur "active" de notre img est dans state -->
+
           <font-awesome-icon :icon="['fas', 'chevron-right']" @click="cycleList.next()" v-if="pictures?.length > 1" />
         </div>
         <p class="title">{{ offerInfos.attributes.title }}</p>
@@ -96,6 +97,7 @@ const cycleList = computed(() => {
           <div>
             <img v-if="offerInfos.attributes.owner.data.attributes.avatar.data"
               :src="offerInfos.attributes.owner.data.attributes.avatar.data.attributes.url" alt="" />
+            <img v-else src="../assets/leboncoin1-assets/user2.png" alt="">
 
             <p>{{ offerInfos.attributes.owner.data.attributes.username }}</p>
           </div>

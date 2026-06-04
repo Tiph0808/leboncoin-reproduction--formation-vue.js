@@ -19,7 +19,7 @@ const errorMessage = ref('')
 
 const GlobalStore = inject('GlobalStore')
 
-// je recupere l'id de loffre envoye en params grace aux props
+// je recupere l'id de loffre envoyée en params grace aux props (au click sur le routerLink "modifier mon annonce" de profileView, jenvoie le params)
 const props = defineProps({
   id: {
     type: String,
