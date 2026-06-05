@@ -10,6 +10,9 @@ const profileInfos = ref(null)
 
 const offers = ref([])
 
+// Je cree une ref pour le changement de photo
+const newAvatar = ref(null)
+
 
 onMounted(async () => {
   try {
@@ -33,6 +36,7 @@ const formatedDate = (date) => {
   return date.split('T')[0].split('-').reverse().join('/')
 }
 
+// Pour supprimer une offre :
 const deleteOffer = async (id) => {
   try {
     const { data } = await axios.delete(`${import.meta.env.VITE_API_URL}/api/offers/${id}`, {
@@ -49,6 +53,53 @@ const deleteOffer = async (id) => {
   }
 }
 
+
+// Pour changer d'avatar
+const changeAvatar = async (event) => {
+  // Je donne comme valeur a ma ref la photo selectionnee :
+  newAvatar.value = event.target.files[0]
+
+  // je crée un Data qui contient la photo a envoyer au back
+  const imageFormData = new FormData()
+
+  // J'ajoute mon image à ce formData =
+  // le nom files cest la convention strapi pour indiquer que c'est un champ files, strapi saura que c'est un upload
+  imageFormData.append('files', newAvatar.value)
+
+  // Je lance ma requete en put pour changer l'avatar de mon user en envoyant mon  nouveau formDAta
+  try {
+    // Methode en 2 etapes : d'abord on enregistre l'image, ensuite on l'ajoute au user
+    // RMQ : on aurait pu faire en une etape et comme dans updateOfferView mais pour mettre a jour un media sur le content-type USERS de strpi ça ne marche pas. Pourquoi? parce que users se comporte differemment des autres content-types (=collections)
+    //1ere requete : J'enregistre l'image
+    const { data: uploadData } = await axios.post(`${import.meta.env.VITE_API_URL}/api/upload`, imageFormData, {
+      headers: {
+        Authorization: `Bearer ${GlobalStore.userInfos.value.token}`
+      }
+    })
+    console.log('image uploadée', uploadData)
+    // 2eme requete : J'update mon user avec une requete en put
+    // en deuxieme argument, le body de ma requete : ce que jenvoie. je donne une nouvelle valeur à ma clé avatar (nom du champ dans strapi) avec l'id de l'image uploadee : uploadData[0].id
+    const { data: dataUser } = await axios.put(`${import.meta.env.VITE_API_URL}/api/users/${GlobalStore.userInfos.value.id}`, { avatar: uploadData[0].id },
+      // ce que dit cette requete = " pour le user avec cet id, mets à jour le champ avatar avec l'image qui a l'id uploadData[0].id"
+      {
+        headers: {
+          Authorization: `Bearer ${GlobalStore.userInfos.value.token}`
+        }
+      })
+    console.log('reponse user : ', dataUser)
+
+    // Je met a jour profileInfos pour que l'affichage change en réattribuant une nouvelle valeur à la clé avatar de profileInfos :
+    // RMQ : c est une ref, donc si sa valaur change Vue "re-render" automatiquement tout ce qu'il y a dans le template.La ref change, l'affichage se met a jour tout seul :) ( sans avoir a recharger la page)
+    profileInfos.value.avatar = uploadData[0]
+
+
+  } catch (error) {
+    console.log('catch error message : ', error.message)
+  }
+
+}
+
+
 </script>
 
 <template>
@@ -60,8 +111,17 @@ const deleteOffer = async (id) => {
       <div>
         <h1>Mes infos</h1>
         <div class="profile">
-          <img v-if="profileInfos?.avatar" :src=profileInfos.avatar.url alt="">
-          <img v-else src="../assets/leboncoin1-assets/user.jpg" alt="">
+          <div>
+            <img v-if="profileInfos?.avatar" :src=profileInfos.avatar.url alt="">
+            <img v-else src="../assets/leboncoin1-assets/user.jpg" alt="">
+
+            <label for="newPicture">
+              <font-awesome-icon :icon="['fas', 'pen']" class="editIcon" />
+            </label>
+            <input type="file" id="newPicture" name="newPicture" @change="changeAvatar">
+
+          </div>
+
           <div>
             <div>
               <p><span>Nom : </span> {{ profileInfos?.username }}</p>
@@ -111,11 +171,12 @@ const deleteOffer = async (id) => {
 
 <style scoped>
 main {
-  min-height: calc(100vh - var(--header-height) - var(--footer-height))
+  min-height: calc(100vh - var(--header-height) - var(--footer-height));
+  padding-top: 20px;
 }
 
 h1 {
-  font-size: 22px;
+  font-size: 20px;
   font-weight: bold;
   margin-bottom: 30px;
 }
@@ -125,6 +186,10 @@ h1 {
   flex-direction: column;
   gap: 30px;
   padding: 20px;
+}
+
+.container > h1 {
+  font-size: 22px;
 }
 
 /* partie profile */
@@ -142,6 +207,7 @@ h1 {
   height: 100px;
   width: 100px;
   border-radius: 50%;
+  /* border: 1px solid orchid; */
 }
 
 .profile > div {
@@ -151,10 +217,33 @@ h1 {
   justify-content: center;
   gap: 15px;
 
+
 }
 
+.profile > div:first-child {
+  position: relative;
+}
+
+.editIcon {
+  color: var(--med-grey);
+  border: 1px solid var(--med-grey);
+  border-radius: 50%;
+  font-size: 25px;
+  padding: 5px;
+  position: absolute;
+  top: 0px;
+  right: -10px;
+  cursor: pointer;
+}
+
+
+input[type='file'] {
+  display: none;
+}
+
+
 .profile p {
-  font-size: 20px;
+  font-size: 18px;
 
 }
 
@@ -162,9 +251,9 @@ h1 {
   font-weight: bold;
 }
 
+
+
 /* partie offers */
-
-
 
 .offers {
   /* border: 1px solid red; */
@@ -251,7 +340,7 @@ h1 {
 }
 
 .noAdd p {
-  font-size: 20px;
+  font-size: 18px;
   margin-bottom: 30px;
 }
 </style>
