@@ -112,7 +112,7 @@ const handleSubmit = () => {
         <font-awesome-icon :icon="['fas', 'circle']" />
 
         <RouterLink :to="{ name: 'profile' }" v-if="GlobalStore.userInfos.value">
-          <span>Profile</span>
+          <span class="profileLink">Profile</span>
         </RouterLink>
 
         <span v-else>Autres</span>
@@ -238,6 +238,10 @@ input:focus {
 
 .bottomPart span {
   font-size: 14px;
+}
+
+.bottomPart .profileLink {
+  color: var(--orange);
 }
 </style>
 
