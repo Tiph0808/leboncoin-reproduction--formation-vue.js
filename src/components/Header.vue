@@ -86,7 +86,7 @@ const handleSubmit = () => {
               <font-awesome-icon :icon="['far', 'user']" />
               <p>{{ GlobalStore.userInfos.value.username }}</p>
             </div>
-            <font-awesome-icon :icon="['fas', 'sign-out-alt']" @click="disconnectUser" />
+            <font-awesome-icon :icon="['fas', 'sign-out-alt']" @click="disconnectUser" title="Se déconnecter" />
           </div>
         </div>
       </div>

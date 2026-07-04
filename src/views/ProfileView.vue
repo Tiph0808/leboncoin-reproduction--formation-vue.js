@@ -13,6 +13,12 @@ const offers = ref([])
 // Je cree une ref pour le changement de photo
 const newAvatar = ref(null)
 
+// Je crée une ref pour l'affichage de l'input pour changer de nom
+const isEditingUsername = ref(false)
+
+// je crée une ref pour mon nouveau nom
+const newUsername = ref('')
+
 
 onMounted(async () => {
   try {
@@ -33,8 +39,14 @@ onMounted(async () => {
 
 // Pour afficher la date de publication correctement jai besoin d'une fonction
 const formatedDate = (date) => {
+  console.log("formatedDate reçoit : ", date)
   return date.split('T')[0].split('-').reverse().join('/')
 }
+
+
+
+
+
 
 // Pour supprimer une offre :
 const deleteOffer = async (id) => {
@@ -99,6 +111,20 @@ const changeAvatar = async (event) => {
 
 }
 
+const changeUsername = async () => {
+  const { data } = await axios.put(`${import.meta.env.VITE_API_URL}/api/users/${GlobalStore.userInfos.value.id}`, { username: newUsername.value }, {
+    headers: {
+      Authorization: `Bearer ${GlobalStore.userInfos.value.token}`
+    }
+  })
+  console.log("reponse changement updateName :  ", data)
+  // Je change la valeur de isEditingUsername pour changer l'affichage et enlever l'input
+  isEditingUsername.value = false
+  // Je donne comme nouvelle valeur a profileInfos.value.username la valeur que je viens de stocker dans la bdd et qui se trouve dans la reponse data :
+  profileInfos.value.username = data.username
+  GlobalStore.userInfos.value.username = data.username
+}
+
 
 </script>
 
@@ -115,19 +141,42 @@ const changeAvatar = async (event) => {
             <img v-if="profileInfos?.avatar" :src=profileInfos.avatar.url alt="">
             <img v-else src="../assets/leboncoin1-assets/user.jpg" alt="">
 
+
             <label for="newPicture">
-              <font-awesome-icon :icon="['fas', 'pen']" class="editIcon" />
+              <font-awesome-icon :icon="['fas', 'pen']" class="editAvatarIcon" />
             </label>
+
+
             <input type="file" id="newPicture" name="newPicture" @change="changeAvatar">
 
           </div>
 
           <div>
-            <div>
+            <div v-if="!isEditingUsername" class="username">
+
               <p><span>Nom : </span> {{ profileInfos?.username }}</p>
+
+
+              <font-awesome-icon :icon="['fas', 'pen']" class="editNameIcon" @click="isEditingUsername = true" />
+
             </div>
+
+            <div v-else class="changeUsername">
+
+              <label for="changeName">Modifier mon nom : </label>
+
+              <input type="text" id="changeName" name="changeName" v-model="newUsername" @keyup.enter="changeUsername">
+              <!-- RMQ : @keyup.enter est un ecouteur d'evenement qui se declenche lorsqu on appuie sur la touche entrée -->
+
+            </div>
+
+
             <div>
               <p><span>E-mail : </span>{{ profileInfos?.email }}</p>
+            </div>
+
+            <div v-if="profileInfos">
+              <p><span>Member since : </span>{{ formatedDate(profileInfos?.createdAt) }}</p>
             </div>
 
           </div>
@@ -224,7 +273,8 @@ h1 {
   position: relative;
 }
 
-.editIcon {
+
+.editAvatarIcon {
   color: var(--med-grey);
   border: 1px solid var(--med-grey);
   border-radius: 50%;
@@ -235,6 +285,7 @@ h1 {
   right: -10px;
   cursor: pointer;
 }
+
 
 
 input[type='file'] {
@@ -250,6 +301,35 @@ input[type='file'] {
 .profile span {
   font-weight: bold;
 }
+
+.username {
+  /* border: 1px solid red; */
+  display: flex;
+  gap: 10px;
+  align-items: center;
+}
+
+.editNameIcon {
+  color: var(--med-grey);
+  border: 1px solid var(--med-grey);
+  border-radius: 50%;
+  padding: 5px;
+  font-size: 25px;
+  cursor: pointer;
+}
+
+
+
+.changeUsername label {
+  font-weight: bold;
+  font-size: 18px;
+}
+
+.changeUsername input {
+  border: none;
+  border-bottom: 1px solid var(--med-grey)
+}
+
 
 
 
@@ -318,8 +398,9 @@ input[type='file'] {
   bottom: 120%;
   left: 50%;
   transform: translateX(-50%);
-  /* border: 1px solid var(--med-grey); */
-  /* color: black; */
+  border: 1px solid var(--med-grey);
+  color: inherit;
+  font-size: inherit;
   padding: 3px 8px;
   border-radius: 4px;
   opacity: 0;

@@ -71,7 +71,12 @@ const userInfos = ref(VueCookies.get('userInfos') || null)
 const changeUserInfos = (infos) => {
   userInfos.value = infos
   // Pour rendre la connexion persistante : Je crée mon cookie avec ces infos
-  VueCookies.set('userInfos', infos)
+  VueCookies.set('userInfos', infos, 0)
+  // RQ : le 3eme argument, 0 (number) force un cookie dit "de session" :
+  // il expire automatiquement à la fermeture complete du navigateur
+  // contrairement au comportement par defaut de vue cookies qui expire au bout de 1 jour
+  // But : deconnecter l'utilisateur lorsqu'il ferme son navigateur
+  // so users arent left logged in on shared devices
 }
 
 app.provide('GlobalStore', {
