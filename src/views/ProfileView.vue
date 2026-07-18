@@ -1,7 +1,6 @@
 <script setup>
-import { onMounted, ref, inject } from 'vue';
+import { onMounted, ref, inject, computed } from 'vue';
 import axios from 'axios';
-import BtnPublishOffer from '@/components/BtnPublishOffer.vue';
 
 
 const GlobalStore = inject('GlobalStore')
@@ -9,6 +8,9 @@ const GlobalStore = inject('GlobalStore')
 const profileInfos = ref(null)
 
 const offers = ref([])
+
+// je cree une nouvelle ref pour stocker mes achats
+const purchases = ref([])
 
 // Je cree une ref pour le changement de photo
 const newAvatar = ref(null)
@@ -22,7 +24,7 @@ const newUsername = ref('')
 
 onMounted(async () => {
   try {
-    const { data } = await axios.get(`${import.meta.env.VITE_API_URL}/api/users/${GlobalStore.userInfos.value.id}?populate[0]=offers&populate[1]=avatar&populate[2]=offers.picture`, {
+    const { data } = await axios.get(`${import.meta.env.VITE_API_URL}/api/users/${GlobalStore.userInfos.value.id}?populate[0]=offers&populate[1]=avatar&populate[2]=offers.picture&populate[3]=purchases&populate[4]=purchases.picture&populate[5]=offers.buyer`, {
       headers: {
         Authorization: `Bearer ${GlobalStore.userInfos.value.token}`
       }
@@ -30,7 +32,9 @@ onMounted(async () => {
     console.log('reponse :', data)
     profileInfos.value = data
     offers.value = data.offers
-
+    purchases.value = data.purchases
+    console.log(onGoingOffers.value)
+    console.log(pastOffers.value)
 
   } catch (error) {
     console.log('catch ProfileView : ', error.message)
@@ -39,13 +43,9 @@ onMounted(async () => {
 
 // Pour afficher la date de publication correctement jai besoin d'une fonction
 const formatedDate = (date) => {
-  console.log("formatedDate reçoit : ", date)
+  //console.log("formatedDate reçoit : ", date)
   return date.split('T')[0].split('-').reverse().join('/')
 }
-
-
-
-
 
 
 // Pour supprimer une offre :
@@ -126,6 +126,33 @@ const changeUsername = async () => {
 }
 
 
+// jutilise la pp computed pour séparer mes offres : les actives et les offres passées (càd achetée par un autre user : qui contiennent un champ buyer)
+// on cree donc une pp computed = nouvelle valeur reactive = onGoingOffers dont le contenu va etre calculé automatiquement à partir de offers (mm chose pour pastOffers) :
+
+// const onGoingOffers = computed(() => {
+//   // dans mon computed j'applique la méthode .filters à mon tableau offers (cette methode va parcourir chaque offre, une par une)
+//   return offers.value.filter((offer) => {
+//     // Pour chaque offre examinee je dois dire a .filters() ce qu il doit faire : pour cela je lui donne une fonction fléchée en argument ("une call-back")
+//     // dans cette fonction on regarde si offer.buyer existe ou pas
+//     // cette fonction renverra true or false a .filters() qui gardera ou pas l'annonce dans le nouveau tableau qu'elle va retourner
+//     if (!offer.buyer) {
+//       return true
+//     } else {
+//       return false
+//     }
+//   })
+// })
+
+// Rq : version syntaxe raccourcie avec return implicite de ma call-back
+const onGoingOffers = computed(() => {
+  return offers.value.filter((offer) => !offer.buyer)
+})
+
+// Même chose pour les offres passées , achetées
+const pastOffers = computed(() => {
+  return offers.value.filter((offer) => offer.buyer)
+})
+
 </script>
 
 <template>
@@ -136,40 +163,34 @@ const changeUsername = async () => {
 
       <div>
         <h1>Mes infos</h1>
+
         <div class="profile">
+
           <div>
+
             <img v-if="profileInfos?.avatar" :src=profileInfos.avatar.url alt="">
             <img v-else src="../assets/leboncoin1-assets/user.jpg" alt="">
-
-
             <label for="newPicture">
               <font-awesome-icon :icon="['fas', 'pen']" class="editAvatarIcon" />
             </label>
-
-
             <input type="file" id="newPicture" name="newPicture" @change="changeAvatar">
 
           </div>
 
           <div>
+
             <div v-if="!isEditingUsername" class="username">
-
               <p><span>Nom : </span> {{ profileInfos?.username }}</p>
-
-
               <font-awesome-icon :icon="['fas', 'pen']" class="editNameIcon" @click="isEditingUsername = true" />
-
             </div>
 
             <div v-else class="changeUsername">
 
               <label for="changeName">Modifier mon nom : </label>
-
               <input type="text" id="changeName" name="changeName" v-model="newUsername" @keyup.enter="changeUsername">
               <!-- RMQ : @keyup.enter est un ecouteur d'evenement qui se declenche lorsqu on appuie sur la touche entrée -->
 
             </div>
-
 
             <div>
               <p><span>E-mail : </span>{{ profileInfos?.email }}</p>
@@ -183,36 +204,87 @@ const changeUsername = async () => {
 
         </div>
       </div>
-      <div v-if="offers.length > 0">
-        <h1>Mes annonces</h1>
-        <div v-for="offer in offers" :key="offer.id" class="offers">
-          <RouterLink :to="{ name: 'offer', params: { id: offer.id } }">
+
+
+      <div v-if="offers.length > 0" class="offersBloc">
+        <div>
+          <h1>Mes annonces en cours</h1>
+          <div v-for="offer in onGoingOffers" :key="offer.id" class="offers">
+            <RouterLink :to="{ name: 'offer', params: { id: offer.id } }">
+              <div>
+                <img :src=offer.picture[0].url alt="">
+                <!-- pour chaque offre je veux afficher la premiere de ses photos -->
+                <p>{{ offer?.title }} <span>(Publiée le : {{ formatedDate(offer?.publishedAt) }})</span></p>
+
+              </div>
+
+            </RouterLink>
+
+            <div>
+              <span class="tooltip" data-tooltip="Supprimer cette annonce" @click="deleteOffer(offer.id)">
+                <font-awesome-icon :icon="['far', 'trash-can']" />
+              </span>
+              <RouterLink :to="{ name: 'updateOffer', params: { id: offer.id } }">
+
+                <button class="updateBtn">Modifier mon annonce</button>
+
+              </RouterLink>
+
+            </div>
+          </div>
+        </div>
+
+        <div v-if="pastOffers.length > 0">
+          <h1>Mes annonces passées</h1>
+          <div v-for="offer in pastOffers" :key="offer.id" class="offers">
+
             <div>
               <img :src=offer.picture[0].url alt="">
               <!-- pour chaque offre je veux afficher la premiere de ses photos -->
               <p>{{ offer?.title }} <span>(Publiée le : {{ formatedDate(offer?.publishedAt) }})</span></p>
-
             </div>
 
-          </RouterLink>
-
-          <div>
-            <span class="tooltip" data-tooltip="Supprimer cette annonce" @click="deleteOffer(offer.id)">
-              <font-awesome-icon :icon="['far', 'trash-can']" />
-            </span>
-            <RouterLink :to="{ name: 'updateOffer', params: { id: offer.id } }">
-
-              <button class="updateBtn">Modifier mon annonce</button>
-
-            </RouterLink>
+            <div>
+              <RouterLink :to="{ name: 'seeOffer', params: { id: offer.id } }">
+                <button class="seeAddBtn">Voir mon annonce</button>
+              </RouterLink>
+              <span class="tooltip" data-tooltip="Supprimer cette annonce" @click="deleteOffer(offer.id)">
+                <font-awesome-icon :icon="['far', 'trash-can']" />
+              </span>
+            </div>
 
           </div>
         </div>
+
+
+
       </div>
       <div v-else class="noAdd">
+        <h1>Mes annonces</h1>
         <p>Aucune annonce enregistrée</p>
-        <BtnPublishOffer />
+
       </div>
+
+      <div v-if="purchases.length > 0">
+
+        <h1>Mes achats</h1>
+        <div v-for="purchase in purchases" :key="purchase.id" class="offers">
+          <div>
+            <img :src="purchase.picture[0].url" alt="">
+            <p>{{ purchase?.title }}</p>
+          </div>
+          <div>
+            <RouterLink :to="{ name: 'seeOffer', params: { id: purchase.id } }">
+              <button class="seeAddBtn">Voir l'annonce</button>
+            </RouterLink>
+          </div>
+
+
+        </div>
+
+      </div>
+
+
 
     </div>
   </main>
@@ -331,9 +403,14 @@ input[type='file'] {
 }
 
 
+/* Offers Bloc */
+.offersBloc {
+  display: flex;
+  flex-direction: column;
+  gap: 30px;
+}
 
-
-/* partie offers */
+/* partie onGoingOffers */
 
 .offers {
   /* border: 1px solid red; */
@@ -352,6 +429,7 @@ input[type='file'] {
   display: flex;
   gap: 30px;
   align-items: center;
+  margin-right: 20px;
 }
 
 .offers img {
@@ -384,8 +462,26 @@ input[type='file'] {
 .offers svg {
   font-size: 20px;
   color: var(--med-grey);
+  cursor: pointer;
 }
 
+
+
+
+
+.seeAddBtn {
+  background-color: transparent;
+  border: none;
+  color: var(--grey);
+  cursor: pointer;
+
+}
+
+.pastOffers svg {
+  font-size: 20px;
+  color: var(--med-grey);
+  cursor: pointer;
+}
 
 /* Pour le text ("Supprimer cette annonce") au survol de licone poubelle */
 .tooltip {

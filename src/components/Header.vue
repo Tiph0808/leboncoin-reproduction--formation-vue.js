@@ -133,6 +133,7 @@ header {
   /* on applique ces valeurs sur top bottom et width car en position fixed, le header sort du DOM, il n'a plus la largeur implicite de son parent mais la largeur de son contenu et se positionne par defaut en haut a gauche de la fenetre */
   background-color: white;
   border-bottom: 1px solid var(--grey);
+  z-index: 100;
 }
 
 /* .container {

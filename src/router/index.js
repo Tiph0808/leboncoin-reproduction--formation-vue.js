@@ -100,6 +100,13 @@ const router = createRouter({
       props: true,
       meta: { requireAuth: true },
     },
+    {
+      path: '/seeOffer/:id',
+      name: 'seeOffer',
+      component: () => import('../views/SeeOfferView.vue'),
+      props: true,
+      meta: { requireAuth: true },
+    },
   ],
 })
 

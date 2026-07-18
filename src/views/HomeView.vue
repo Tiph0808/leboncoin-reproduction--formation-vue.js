@@ -41,9 +41,11 @@ onMounted(() => {
       console.log('page envoyée:', props.page)
       const { data } = await axios.get(
         // on a populate d'autres clés de l'objet offer qui n'apparaissaient pas par defaut afin d'acceder à toutes les infos (voir complement d'informations/querys => grand cahier)
-        `${import.meta.env.VITE_API_URL}/api/offers?populate[0]=picture&populate[1]=owner.avatar${priceFilters}&sort[0]=${props.sort}&filters[title][$containsi]=${props.title}&pagination[page]=${props.page}&pagination[pageSize]=10`,
+        `${import.meta.env.VITE_API_URL}/api/offers?populate[0]=picture&populate[1]=owner.avatar${priceFilters}&sort[0]=${props.sort}&filters[title][$containsi]=${props.title}&filters[buyer][$null]=true&pagination[page]=${props.page}&pagination[pageSize]=10`,
       )
-      console.log('data', data) // infos sur les pages a la clé meta
+      // Pour les filtres appliqués : il y a d'abord les filtres existants ou pas qui viennent des champs remplis ou pas cote front (Dans le composant Filters.vue)
+      // puis le filtre sur le champ buyer grace a l'operateur $null qui peut etre true or false : je ne veux afficher que les annonces qui n'ont pas encore de buyer, les offres non-achetées. LOGIQUE !! ;)
+      console.log('data', data) // infos sur les pages à la clé meta
       // console.log(data.data)
       offersList.value = data.data
       // console.log(offersList.value)

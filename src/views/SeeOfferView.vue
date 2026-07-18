@@ -1,6 +1,6 @@
 <script setup>
 import { onMounted, ref, computed } from 'vue'
-import { RouterLink } from 'vue-router'
+
 import axios from 'axios'
 import { useCycleList } from '@vueuse/core'
 
@@ -66,7 +66,7 @@ const cycleList = computed(() => {
   <main>
     <p v-if="offerInfos === null">Loading...</p>
     <div v-else class="container">
-      <div class="leftColumn">
+      <div>
         <div class="carrousel">
           <!-- <img :src="offerInfos.attributes.pictures.data[0].attributes.url" alt="" /> -->
           <!-- <p>{{ cycleList }}</p> = s'affiche un objet avec une clé state qui elle meme est un objet, notre image se trouve à la clé attributes.url : -->
@@ -89,34 +89,10 @@ const cycleList = computed(() => {
 
         <p>{{ offerInfos.attributes.description }}</p>
 
-        <font-awesome-icon :icon="['fas', 'map-marker-alt']" />
-        <span>Agon-Coutainville (50230)</span>
+        <p class="seller">Vendu par <span>{{ offerInfos.attributes.owner.data.attributes.username }}</span></p>
+
       </div>
-      <div class="rightColumn">
-        <div class="owner">
-          <div>
-            <img v-if="offerInfos.attributes.owner.data.attributes.avatar.data"
-              :src="offerInfos.attributes.owner.data.attributes.avatar.data.attributes.url" alt="" />
-            <img v-else src="../assets/leboncoin1-assets/user.jpg" alt="">
 
-            <p>{{ offerInfos.attributes.owner.data.attributes.username }}</p>
-          </div>
-
-          <p class="identity">
-            <font-awesome-icon :icon="['fas', 'check-double']" /> Pièce d’identité vérifiée
-          </p>
-          <p><font-awesome-icon :icon="['far', 'clock']" /> Répond généralement en 1 heure</p>
-        </div>
-
-        <div class="btnPart">
-          <button>
-            <RouterLink :to="{ name: 'payment', params: { id: props.id } }">Acheter
-            </RouterLink>
-            <!-- Dans la correction elle recupere l'id de l'offre dans la reponse a la requete, moi je la recupere direct dans les props puisqu'elle m'a ete transmise par le router independamment de la requete -->
-          </button>
-          <button>Message</button>
-        </div>
-      </div>
     </div>
   </main>
 </template>
@@ -132,11 +108,8 @@ main {
   padding-top: 40px;
 }
 
-/*---- LEFT SIDE ----*/
-.leftColumn {
-  /* border: 1px solid salmon; */
-  width: 65%;
-}
+
+
 
 .carrousel {
   display: flex;
@@ -147,7 +120,7 @@ main {
   font-size: 20px;
 }
 
-.leftColumn img {
+.container > div img {
   width: 100%;
   height: 350px;
   object-fit: contain;
@@ -187,77 +160,8 @@ h2 + p {
   margin-bottom: 20px;
 }
 
-/*----- RIGHT SIDE -----*/
-
-.rightColumn {
-  /* border: 1px solid salmon; */
-  width: 35%;
-  height: 365px;
-  padding: 20px;
-  border: 2px solid var(--light-grey);
-  /* box-shadow: 0 0 3px grey; */
-  display: flex;
-  flex-direction: column;
-  justify-content: space-around;
-}
-
-.owner > div {
-  display: flex;
-  gap: 10px;
-  margin-bottom: 20px;
-}
-
-.owner img {
-  height: 65px;
-  width: 65px;
-  border-radius: 50%;
-}
-
-.owner > div p {
-  font-size: 18px;
+.seller span {
+  font-size: 20px;
   font-weight: bold;
-  text-transform: uppercase;
-}
-
-.identity {
-  color: var(--brown);
-  background-color: var(--light-coral);
-  font-size: 12px;
-  padding: 5px;
-  border-radius: 10px;
-  width: fit-content;
-  margin-bottom: 20px;
-}
-
-.identity + p {
-  /* cible la balise p JUSTE APRES l'element avec la classe identity */
-  font-size: 14px;
-}
-
-hr {
-  width: 90%;
-  border: 1px solid var(--light-grey);
-}
-
-.btnPart {
-  display: flex;
-  flex-direction: column;
-  gap: 10px;
-  padding-top: 20px;
-  border-top: 1px solid var(--light-grey);
-}
-
-button {
-  background-color: var(--orange);
-  color: white;
-  font-weight: bold;
-  padding: 10px 0;
-  border: none;
-  border-radius: 10px;
-
-}
-
-button:last-child {
-  background-color: var(--blue-navy);
 }
 </style>

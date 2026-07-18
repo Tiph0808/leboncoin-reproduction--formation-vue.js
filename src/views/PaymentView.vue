@@ -149,7 +149,9 @@ const handlePayment = async () => {
         amount: totalPrice.value, // RMQ : le prix tota doit tenir compte du choix de livraison! on prend donc le totalPrice calculé plus haut. Attention! : il faut mettre .value aussi pour un computed
         title: offerInfos.value.attributes.title,
         // Je rajoute comme infos l'id de l'offre pour pouvoir la supprimer apres paiment coté back
-        id: props.id
+        id: props.id,
+        // je rajoute l'id de l'utilisateur qui fait l'achat pour lui attribuer cet achat coté backend
+        buyerId: GlobalStore.userInfos.value.id
 
       }, { headers: { Authorization: `Bearer ${GlobalStore.userInfos.value.token}` } }) // MA route est reservée aux utilisateurs authentifiés dans strapi je dois donc rajouter un header avec le token stocke a la connexion de l'utilisateur
       console.log('data-payment : ', response)
