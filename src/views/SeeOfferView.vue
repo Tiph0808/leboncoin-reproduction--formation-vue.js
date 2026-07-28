@@ -1,5 +1,5 @@
 <script setup>
-import { onMounted, ref, computed } from 'vue'
+import { onMounted, ref, computed, inject } from 'vue'
 
 import axios from 'axios'
 import { useCycleList } from '@vueuse/core'
@@ -12,6 +12,10 @@ const props = defineProps({
 })
 
 console.log('id >>>', props.id)
+
+// jinjecte le global store pour recupérer l'id du user connecté
+const GlobalStore = inject('GlobalStore')
+console.log(GlobalStore.userInfos.value.id)
 
 const offerInfos = ref(null)
 const pictures = ref([])
@@ -89,7 +93,15 @@ const cycleList = computed(() => {
 
         <p>{{ offerInfos.attributes.description }}</p>
 
-        <p class="seller">Vendu par <span>{{ offerInfos.attributes.owner.data.attributes.username }}</span></p>
+
+
+
+        <p class="user">Acheté par
+          <span>{{
+            offerInfos.attributes.buyer.data.attributes.username }}</span> / Vendu par <span>{{
+              offerInfos.attributes.owner.data.attributes.username }}</span>
+        </p>
+
 
       </div>
 
@@ -160,7 +172,9 @@ h2 + p {
   margin-bottom: 20px;
 }
 
-.seller span {
+
+
+.user span {
   font-size: 20px;
   font-weight: bold;
 }

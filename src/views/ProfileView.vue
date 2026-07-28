@@ -207,7 +207,7 @@ const pastOffers = computed(() => {
 
 
       <div v-if="offers.length > 0" class="offersBloc">
-        <div>
+        <div v-if="onGoingOffers.length > 0">
           <h1>Mes annonces en cours</h1>
           <div v-for="offer in onGoingOffers" :key="offer.id" class="offers">
             <RouterLink :to="{ name: 'offer', params: { id: offer.id } }">
@@ -329,6 +329,7 @@ h1 {
   width: 100px;
   border-radius: 50%;
   /* border: 1px solid orchid; */
+  object-fit: cover;
 }
 
 .profile > div {
