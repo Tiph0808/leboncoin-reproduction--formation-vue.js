@@ -107,6 +107,16 @@ const router = createRouter({
       props: true,
       meta: { requireAuth: true },
     },
+    {
+      // Route vers le profil d'un vendeur uniquement pour voit otoutes ces annonces, route publique, acessible aux utilisateurs NON connectés
+      // Envoi de sellerId en params. (Pour eviter la confusion avec les autres id envoyees en params sur les autres routes (car ids de l'offre et non du vendeur)
+      path: '/sellerProfile/:sellerId',
+      name: 'sellerProfile',
+      // Chargement asyncrone car requete au montage pour recuperer les donnees
+      component: () => import('../views/SellerProfileView.vue'),
+      // props : true permet de recevoir ce params en props dans le composant vers lequel va la route
+      props: true,
+    },
   ],
 })
 

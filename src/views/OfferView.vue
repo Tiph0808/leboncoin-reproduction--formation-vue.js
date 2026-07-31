@@ -9,6 +9,7 @@ const props = defineProps({
     type: String,
     required: true,
   },
+
 })
 
 console.log('id >>>', props.id)
@@ -94,12 +95,16 @@ const cycleList = computed(() => {
       </div>
       <div class="rightColumn">
         <div class="owner">
+
           <div>
             <img v-if="offerInfos.attributes.owner.data.attributes.avatar.data"
               :src="offerInfos.attributes.owner.data.attributes.avatar.data.attributes.url" alt="" />
             <img v-else src="../assets/leboncoin1-assets/user.jpg" alt="">
+            <RouterLink :to="{ name: 'sellerProfile', params: { sellerId: offerInfos.attributes.owner.data.id } }">
+              <!-- On cree un lien vers sellerProfile on envoie en params sellerId : l'id du vendeur,presente dans la reponse a la requete. ATTENTION : le nom du params doit etre le MEME que celui ecrit lorqu'on a crée la route dans index.js!!-->
 
-            <p>{{ offerInfos.attributes.owner.data.attributes.username }}</p>
+              <p>{{ offerInfos.attributes.owner.data.attributes.username }}</p>
+            </RouterLink>
           </div>
 
           <p class="identity">
@@ -234,10 +239,7 @@ h2 + p {
   font-size: 14px;
 }
 
-hr {
-  width: 90%;
-  border: 1px solid var(--light-grey);
-}
+
 
 .btnPart {
   display: flex;

@@ -7,7 +7,14 @@ import { RouterLink } from 'vue-router'
 
 
 const props = defineProps({
+  // on reçoit en props un objet : les infos de l'offre depuis HomeView
   offerInfos: Object,
+  // on reçoit en props un boolean showOwner depuis SellerProfile qui permettra de masquer le nom/avatar du vendeur dans offerCard car deja affichés dans la premiere partie de la page
+  showOwner: {
+    type: Boolean,
+    default: true
+    // Valeur par defaut : TRUE , de cette façon le comportement de offerCard sera inchangé pour homeView qui n'enverra pas cette props
+  }
 })
 // console.log(props.offerInfos)
 // console.log(props.offerInfos.attributes.pictures.data[0].attributes.url)
@@ -88,7 +95,8 @@ const formatedPrice = computed(() => {
 <template>
   <RouterLink :to="{ name: 'offer', params: { id: offerInfos.id } }" class="offerCard">
     <div>
-      <div class="ownerPart">
+      <div v-if="showOwner" class="ownerPart">
+        <!-- je ne veux afficher cette partie d'offerCard que si sowowner est true , sinon elle sera masquée :) -->
         <img class="avatar" v-if="offerInfos.attributes.owner.data.attributes.avatar.data"
           :src="offerInfos.attributes.owner.data.attributes.avatar.data.attributes.url" alt="" />
         <img class="avatar" v-else src="../assets/leboncoin1-assets/user.jpg" alt="">
